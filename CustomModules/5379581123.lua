@@ -76,7 +76,7 @@ local function getcustomassetfunc(path)
 			textlabel:Remove()
 		end)
 		local req = requestfunc({
-			Url = "https://raw.githubusercontent.com/Erchobg/vapevoidware/main/"..path:gsub("vape/assets", "assets"),
+			Url = "https://raw.githubusercontent.com/VapeVoidware/vapevoidware/main/"..path:gsub("vape/assets", "assets"),
 			Method = "GET"
 		})
 		writefile(path, req.Body)

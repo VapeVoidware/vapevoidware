@@ -51,7 +51,7 @@ pcall(function() core = game:GetService('CoreGui') end)
 
 local function vapeGithubRequest(scripturl)
 	if not isfile('vape/'..scripturl) then
-		local suc, res = pcall(function() return game:HttpGet('https://raw.githubusercontent.com/Erchobg/vapevoidware/'..readfile('vape/commithash.txt')..'/'..scripturl, true) end)
+		local suc, res = pcall(function() return game:HttpGet('https://raw.githubusercontent.com/VapeVoidware/vapevoidware/'..readfile('vape/commithash.txt')..'/'..scripturl, true) end)
 		assert(suc, res)
 		assert(res ~= '404: Not Found', res)
 		if scripturl:find('.lua') then res = '--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n'..res end
@@ -8295,7 +8295,7 @@ shared.ReinstallVoidware = function()
 	if isfile('ModulesData.txt') then
 		writefile('vape/Libraries/ModulesData.txt', readfile('ModulesData.txt'))
 	end
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/Erchobg/vapevoidware/main/NewMainScript.lua", true))()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/vapevoidware/main/NewMainScript.lua", true))()
 end
 run(function()
 	local ReinstallVoidware = {}
@@ -8313,7 +8313,7 @@ run(function()
 				if isfile('ModulesData.txt') then
 					writefile('vape/Libraries/ModulesData.txt', readfile('ModulesData.txt'))
 				end
-				loadstring(game:HttpGet("https://raw.githubusercontent.com/Erchobg/vapevoidware/main/NewMainScript.lua", true))()
+				loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/vapevoidware/main/NewMainScript.lua", true))()
 			end
 		end
 	})

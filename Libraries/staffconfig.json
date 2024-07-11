@@ -1,0 +1,9 @@
+{
+    "legitmessages": [
+        ["ok bruh, this region is too laggy.", "cya guys.", "i\"m out", "/llobby"], 
+        ["why the hell is this server so laggy.", "ok I can\"t tolerate this crap.", "/llobby"],
+        ["ok i\"m being called for dinner, I\"ll play to you later bro.", "AND DON\"T FORGET TO ANSWER MY CALLS", "bye", "/llobby"]
+    ],
+    "staffaccounts": [],
+    "legitmodules": ["AutoLeave", "FastConsume", "Scaffold", "AutoReportV2", "AutoKit", "PingDetector", "ShopTierBypass", "AutoBalloon", "AutoHotbar", "SafeWalk", "AutoTool", "Freecam", "AutoBank", "OpenEnderchest", "ProjectileAimbot"]
+}

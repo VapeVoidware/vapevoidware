@@ -38,16 +38,30 @@ local function vapeGithubRequest(scripturl)
 				displayErrorPopup("The connection to github is taking a while, Please be patient.")
 			end
 		end)
-		suc, res = pcall(function() return game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/vapevoidware/"..readfile("vape/commithash.txt").."/"..scripturl, true) end)
+		suc, res = pcall(function() 
+			return game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/vapevoidware/"..readfile("vape/commithash.txt").."/"..scripturl, true) 
+		end)
+		if not suc or res == "404: Not Found" then
+			suc, res = pcall(function() 
+				return game:HttpGet("https://raw.githubusercontent.com/Erchobg/vapevoidware/"..readfile("vape/commithash.txt").."/"..scripturl, true) 
+			end)
+		end
+		
 		if not suc or res == "404: Not Found" then
 			displayErrorPopup("Failed to connect to github : vape/"..scripturl.." : "..res)
 			error(res)
 		end
-		if scripturl:find(".lua") then res = "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..res end
+		
+		if scripturl:find(".lua") then 
+			res = "--This watermark is used to delete the file if its cached, remove it to make the file persist after commits.\n"..res 
+		end
+		
 		writefile("vape/"..scripturl, res)
 	end
 	return readfile("vape/"..scripturl)
 end
+
+getgenv().vapeGithubRequest = vapeGithubRequest
 
 if not shared.VapeDeveloper then 
 	local commit = "main"

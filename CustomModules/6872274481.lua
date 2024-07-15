@@ -15212,9 +15212,10 @@ end)
 run(function() --- hi nebula :)
 	local insta = {Enabled = false}
 	insta = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
-		Name = "4BigGuysExploit",
+		Name = "EmberExploit",
 		Function = function(callback)
 			if callback then
+				warningNotification("EmberExploit", "Ember blade is required for this to work", 3)
 				task.spawn(function()
 					repeat
 						task.wait()

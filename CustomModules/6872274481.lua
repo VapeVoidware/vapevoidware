@@ -15165,7 +15165,7 @@ run(function()
 end)
 
 run(function()
-	local TPHighJump = {Enabled = false}
+	local TPHighJump = {Enabled = false} --- sup nebula :)
 
 	local function PerformHighJump()
 		local character = game.Players.LocalPlayer.Character
@@ -15206,6 +15206,28 @@ run(function()
 		Function = function(value)
 			TPHighJumpDistance.Value = value
 		end
+	})
+end)
+
+run(function() --- hi nebula :)
+	local insta = {Enabled = false}
+	insta = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = "4BigGuysExploit",
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					repeat
+						task.wait()
+						game:GetService("ReplicatedStorage").rbxts_include.node_modules["@rbxts"].net.out._NetManaged.HellBladeRelease:FireServer({
+							["chargeTime"] = 0.999,
+							["player"] = game:GetService("Players").LocalPlayer,
+							["weapon"] =game:GetService("ReplicatedStorage").Inventories:FindFirstChild(lplr.Name.."infernal_saber"),
+						})
+					until (not insta.Enabled)
+				end)
+			end
+		end, 
+		HoverText = "🔥ember"
 	})
 end)
 

@@ -3898,7 +3898,9 @@ if shared.VapeExecuted then
 
 		windowapi["CreateOptionsButton"] = function(argstablemain)
 			if GuiLibrary.ObjectsThatCanBeSaved[argstablemain["Name"].."OptionsButton"] then
-				GuiLibrary["RemoveObject"](argstablemain["Name"].."OptionsButton")
+				pcall(function()
+					GuiLibrary["RemoveObject"](argstablemain["Name"].."OptionsButton")
+				end)
 			end
 			local buttonapi = {}
 			local amount = #children:GetChildren()

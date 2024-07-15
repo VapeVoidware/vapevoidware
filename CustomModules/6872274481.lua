@@ -15246,3 +15246,96 @@ local suc, err = pcall(function()
 end)
 
 if err then InfoNotification("Voidware Whitelist", "Failure loading whitelist modules. Error: "..tostring(err), 7) warn("VoidwareWhitelist_ErrorReport: "..tostring(err)) end
+
+
+run(function()
+	local Anime = {}
+	local Anime_table = {
+		["AnimeWaifu1"] = 18498989965,
+		["Anime2"] = {
+			["ID"] = 18499238992,
+			["Size"] = UDim2.new(0, 150, 0, 200)
+		},
+		["Anime3"] = {
+			["ID"] = 18499361548,
+			["Size"] = UDim2.new(0, 150, 0, 200)
+		},
+		["Anime4"] = 18499384179,
+		["Anime5"] = 18499402527
+	}
+	local default_table = {
+		["Size"] = UDim2.new(0, 100, 0, 200),
+		["Position"] = UDim2.new(0.9, 0, 0, 0)
+	}
+	local anime_image_label
+	local AnimeSelection = {Value = "AnimeWaifu1"}
+	Anime = GuiLibrary.ObjectsThatCanBeSaved.WorldWindow.Api.CreateOptionsButton({
+		Name = 'AnimeImages',
+		Function = function(calling)
+			if calling then 
+				pcall(function()
+					if game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("ANIMEIMAGESSCREENGUI") then game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("ANIMEIMAGESSCREENGUI"):Destroy() end
+				end)
+
+				local chosenid = Anime_table[AnimeSelection.Value]
+
+				local a = Instance.new("ScreenGui")
+				a.Name = "ANIMEIMAGESSCREENGUI"
+				a.Parent = game:GetService("Players").LocalPlayer.PlayerGui
+
+				local b = Instance.new("ImageLabel")
+				b.Parent = a
+				b.BackgroundTransparency = 1
+
+				--- CUSTOM ---
+				if type(Anime_table[AnimeSelection.Value]) == "table" then
+					b.Image = "rbxassetid://"..tostring(chosenid["ID"])
+					b.Position = UDim2.new(0.9, 0, 0, 0)
+					b.Size = UDim2.new(0, 100, 0, 200)
+					for i,v in pairs(chosenid) do
+						if i ~= "ID" then
+							b[i] = chosenid[i]
+						end
+					end
+				else
+					b.Image = "rbxassetid://"..tostring(chosenid)
+					b.Position = UDim2.new(0.9, 0, 0, 0)
+					b.Size = UDim2.new(0, 100, 0, 200)
+				end
+
+				anime_image_label = b
+
+				shared.GuiLibrary.SelfDestructEvent.Event:Connect(function()
+					game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("ANIMEIMAGESSCREENGUI"):Destroy()
+				end)
+			else
+				game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild("ANIMEIMAGESSCREENGUI"):Destroy()
+			end
+		end
+	})
+	local options = {}
+	for i,v in pairs(Anime_table) do table.insert(options, i) end
+	AnimeSelection = Anime.CreateDropdown({
+		Name = "Selection",
+		Function = function()
+			if anime_image_label then 
+				local chosenid = Anime_table[AnimeSelection.Value]
+				if type(Anime_table[AnimeSelection.Value]) == "table" then
+					anime_image_label.Image = "rbxassetid://"..tostring(chosenid["ID"])
+					anime_image_label.Position = UDim2.new(0.9, 0, 0, 0)
+					anime_image_label.Size = UDim2.new(0, 100, 0, 200)
+					for i,v in pairs(chosenid) do
+						if i ~= "ID" then
+							anime_image_label[i] = chosenid[i]
+						end
+					end
+				else
+					anime_image_label.Image = "rbxassetid://"..tostring(chosenid)
+					anime_image_label.Position = UDim2.new(0.9, 0, 0, 0)
+					anime_image_label.Size = UDim2.new(0, 100, 0, 200)
+				end
+			end
+		end,
+		List = options
+	})
+end)

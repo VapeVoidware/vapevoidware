@@ -1136,6 +1136,49 @@ run(function()
 				changetxt(game.Workspace)
 				chageyes(game.Workspace)
 			end)
+		end,
+		anime = function()
+			local texture = "18499238992"
+			task.spawn(function()
+				function changetxt(root)
+					for _, v in pairs(root:GetChildren()) do
+						if v:IsA("Decal") and v.Texture ~= "http://www.roblox.com/asset/?id="..texture then
+							v.Parent = nil
+						elseif v:IsA("BasePart") then
+							v.Material = "Plastic"
+							v.Transparency = 0
+							local One = Instance.new("Decal", v)
+							local Two = Instance.new("Decal", v)
+							local Three = Instance.new("Decal", v)
+							local Four = Instance.new("Decal", v)
+							local Five = Instance.new("Decal", v)
+							local Six = Instance.new("Decal", v)
+							One.Texture = "http://www.roblox.com/asset/?id="..texture
+							Two.Texture = "http://www.roblox.com/asset/?id="..texture
+							Three.Texture = "http://www.roblox.com/asset/?id="..texture
+							Four.Texture = "http://www.roblox.com/asset/?id="..texture
+							Five.Texture = "http://www.roblox.com/asset/?id="..texture
+							Six.Texture = "http://www.roblox.com/asset/?id="..texture
+							One.Face = "Front"
+							Two.Face = "Back"
+							Three.Face = "Right"
+							Four.Face = "Left"
+							Five.Face = "Top"
+							Six.Face = "Bottom"
+						end
+						changetxt(v)
+					end
+				end
+
+				function chageyes()
+					for _, skibidi in pairs(root:GetChildren()) do
+						chageyes(skibidi)
+					end
+				end
+				
+				changetxt(game.Workspace)
+				chageyes(game.Workspace)
+			end)
 		end
 	}
 

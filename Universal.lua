@@ -4763,7 +4763,7 @@ run(function()
 		end
 	end
 	Search = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
-		Name = "Search",
+		Name = "PartESP",
 		Function = function(callback)
 			if callback then
 				searchRefresh()

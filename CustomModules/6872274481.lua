@@ -13535,7 +13535,7 @@ run(function()
 		Function = function(callback)
 			if callback then
 				warningNotification("MelodyExploit", "Requires a guitar! Recommended lucky blocks or melody kit", 3)
-				RunLoops:BindToHeartbeat("melody",function()					
+				RunLoops:BindToHeartbeat("melody",function()			
 					if getItem("guitar") then
 						if lplr.Character.Humanoid.Health < lplr.Character.Humanoid.MaxHealth then
 							bedwars.Client:Get(bedwars.GuitarHealRemote):SendToServer({healTarget = lplr})
@@ -14411,7 +14411,8 @@ run(function()
 						end)
 						return success and response 
 					end
-					if canRespawn() then warningNotification("Texture packs", "Resetting for the texture to get applied", 5) killPlayer(lplr) else warningNotification("Texture packs", "Unable to reset your chatacter! Please do it manually", 3) end
+					warningNotification("Texture packs", "Reset for the pack to work", 3)
+					--if canRespawn() then warningNotification("Texture packs", "Resetting for the texture to get applied", 5) killPlayer(lplr) else warningNotification("Texture packs", "Unable to reset your chatacter! Please do it manually", 3) end
 					TexturePacks.Enabled = false 
 					TexturePacks.Enabled = true 
 					if ChosenPack.Value == "Realistic Pack" then
@@ -15128,7 +15129,7 @@ run(function()
 		Function = function(calling)
 			if calling then 
 				task.spawn(function()
-					repeat task.wait(0.2)
+					repeat task.wait(0.5)
 						local args = {
 							[1] = {
 								["era"] = "iron_era"

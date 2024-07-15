@@ -3273,6 +3273,39 @@ run(function()
 			{CFrame = CFrame.new(-0.01, 0, 0) * CFrame.Angles(math.rad(-7), math.rad(-7), math.rad(-1)), Time = 0.08},
 			{CFrame = CFrame.new(0, 0, 0) * CFrame.Angles(math.rad(1), math.rad(-7), math.rad(7)), Time = 0.11}
 		}
+		Pulse = {
+			{CFrame = CFrame.new(0.69, -0.7, 0.6) * CFrame.Angles(math.rad(0), math.rad(0), math.rad(0)), Time = 0.5},
+			{CFrame = CFrame.new(0.69, -0.72, 0.6) * CFrame.Angles(math.rad(-20), math.rad(0), math.rad(0)), Time = 1.0},
+			{CFrame = CFrame.new(0.69, -0.68, 0.6) * CFrame.Angles(math.rad(20), math.rad(0), math.rad(0)), Time = 1.5},
+			{CFrame = CFrame.new(0.69, -0.7, 0.6) * CFrame.Angles(math.rad(0), math.rad(0), math.rad(0)), Time = 2.0}
+		},
+		["Slowly Smooth"] = {
+			{CFrame = CFrame.new(0.69, -0.7, 0.6) * CFrame.Angles(math.rad(-30), math.rad(50), math.rad(-90)), Time = 0.25},
+			{CFrame = CFrame.new(0.7, -0.71, 0.59) * CFrame.Angles(math.rad(-84), math.rad(50), math.rad(-38)), Time = 0.5},
+			{CFrame = CFrame.new(0.150, -0.8, 0.1) * CFrame.Angles(math.rad(-45), math.rad(40), math.rad(-75)), Time = 0.75},
+			{CFrame = CFrame.new(0.02, -0.8, 0.05) * CFrame.Angles(math.rad(-60), math.rad(60), math.rad(-95)), Time = 1},
+			{CFrame = CFrame.new(0.7, -0.71, 0.59) * CFrame.Angles(math.rad(-84), math.rad(50), math.rad(-38)), Time = 1.25},
+			{CFrame = CFrame.new(0.69, -0.7, 0.6) * CFrame.Angles(math.rad(-30), math.rad(50), math.rad(-90)), Time = 1.5},
+		},
+		["Latest Remake"] = {
+			{CFrame = CFrame.new(0.68, -0.72, 0.12) * CFrame.Angles(math.rad(-63), math.rad(57), math.rad(-49)), Time = 0.4},
+			{CFrame = CFrame.new(0.17, -1.18, 0.52) * CFrame.Angles(math.rad(-177), math.rad(56), math.rad(31)), Time = 0.4}
+		},
+		["Exhibition Fast"] = {
+			{CFrame = CFrame.new(0.7, -0.7, 0.6) * CFrame.Angles(math.rad(-20), math.rad(50), math.rad(-90)), Time = 0.05},
+			{CFrame = CFrame.new(0.8, -0.8, 0.5) * CFrame.Angles(math.rad(-60), math.rad(60), math.rad(-80)), Time = 0.07},
+		},
+		["Smooth Gaming"] = {
+			{CFrame = CFrame.new(0.69, -0.7, 0.6) * CFrame.Angles(math.rad(-30), math.rad(50), math.rad(-90)), Time = 0.25},
+			{CFrame = CFrame.new(0.68, -0.72, 0.12) * CFrame.Angles(math.rad(-63), math.rad(57), math.rad(-49)), Time = 0.4},
+			{CFrame = CFrame.new(0.7, -0.71, 0.59) * CFrame.Angles(math.rad(-84), math.rad(50), math.rad(-38)), Time = 0.6},
+			{CFrame = CFrame.new(0.17, -1.18, 0.52) * CFrame.Angles(math.rad(-177), math.rad(56), math.rad(31)), Time = 0.6},
+			{CFrame = CFrame.new(0.150, -0.8, 0.1) * CFrame.Angles(math.rad(-45), math.rad(40), math.rad(-75)), Time = 0.8},
+			{CFrame = CFrame.new(0.02, -0.8, 0.05) * CFrame.Angles(math.rad(-60), math.rad(60), math.rad(-95)), Time = 1.0},
+			{CFrame = CFrame.new(0.8, -0.8, 0.5) * CFrame.Angles(math.rad(-60), math.rad(60), math.rad(-80)), Time = 1.2},
+			{CFrame = CFrame.new(0.7, -0.71, 0.59) * CFrame.Angles(math.rad(-84), math.rad(50), math.rad(-38)), Time = 1.4},
+			{CFrame = CFrame.new(0.69, -0.7, 0.6) * CFrame.Angles(math.rad(-30), math.rad(50), math.rad(-90)), Time = 1.6}
+		}
 	}
 
 	local function closestpos(block, pos)

@@ -15164,6 +15164,51 @@ run(function()
     })
 end)
 
+run(function()
+	local TPHighJump = {Enabled = false}
+
+	local function PerformHighJump()
+		local character = game.Players.LocalPlayer.Character
+		local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+		
+		if humanoidRootPart then
+			local jumpDistance = TPHighJumpDistance.Value
+			local initialHeight = humanoidRootPart.Position.Y
+			for i = 1, 3 do  
+				humanoidRootPart.CFrame = CFrame.new(humanoidRootPart.Position + Vector3.new(0, jumpDistance, 0))
+				wait(0.1) 
+				
+				local currentHeight = humanoidRootPart.Position.Y - initialHeight
+				warningNotification("TPHighJump", "Currently " .. tostring(currentHeight) .. " studs in the air", 3)
+			end
+		end
+	end
+
+	TPHighJump = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = "TPHighJump",
+		Function = function(callback)
+			if callback then
+				PerformHighJump()
+
+		wait(0.6)
+		TPHighJump.ToggleButton(false)
+
+			end
+		end,
+		HoverText = "x3 the number that you put in height"
+	})
+
+	TPHighJumpDistance = TPHighJump.CreateSlider({
+		Name = "Jump Height (studs)",
+		Min = 1,
+		Max = 350,
+		Default = 50,
+		Function = function(value)
+			TPHighJumpDistance.Value = value
+		end
+	})
+end)
+
 warningNotification('Voidware ' .. void.version, 'Loaded in ' .. string.format('%.1f', void.round(tick() - void.load))..'s. Logged in as ' .. lplr.Name .. '.', 7)
 shared.GlobalStore = store
 local ProtectedModules

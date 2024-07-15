@@ -35,7 +35,7 @@ local function vapeGithubRequest(scripturl)
 		task.delay(15, function()
 			if not res and not errorPopupShown then 
 				errorPopupShown = true
-				displayErrorPopup("The connection to github is taking a while, Please be patient.")
+				--displayErrorPopup("The connection to github is taking a while, Please be patient.")
 			end
 		end)
 		suc, res = pcall(function() 
@@ -48,7 +48,7 @@ local function vapeGithubRequest(scripturl)
 		end
 		
 		if not suc or res == "404: Not Found" then
-			displayErrorPopup("Failed to connect to github : vape/"..scripturl.." : "..res)
+			--displayErrorPopup("Failed to connect to github : vape/"..scripturl.." : "..res)
 			error(res)
 		end
 		

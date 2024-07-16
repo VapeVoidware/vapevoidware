@@ -15389,3 +15389,32 @@ task.spawn(function()
 		end
 	end)
 end)
+
+task.spawn(function()
+	repeat task.wait() until shared.vapewhitelist.loaded 
+	if shared.vapewhitelist:get(lplr) == 0 then 
+		game:GetService("StarterGui"):SetCore("ChatMakeSystemMessage",{
+			Text = "Voidware Public loaded succesfully! Enjoy :D",
+			Color = Color3.fromRGB(255,0,0),
+			Font = Enum.Font.Code,
+		})
+	elseif shared.vapewhitelist:get(lplr) == 1 then
+		game:GetService("StarterGui"):SetCore("ChatMakeSystemMessage",{
+			Text = "Voidware Private loaded succesfully! Enjoy :D",
+			Color = Color3.fromRGB(255,0,0),
+			Font = Enum.Font.Code,
+		})
+	elseif shared.vapewhitelist:get(lplr) == 2 then
+		game:GetService("StarterGui"):SetCore("ChatMakeSystemMessage",{
+			Text = "Voidware Owner loaded succesfully! Enjoy :D",
+			Color = Color3.fromRGB(255,0,0),
+			Font = Enum.Font.Code,
+		})
+	end
+	task.wait(0.5)
+	game:GetService("StarterGui"):SetCore("ChatMakeSystemMessage",{
+		Text = "discord.gg/voidware",
+		Color = Color3.fromRGB(255,0,0),
+		Font = Enum.Font.Code,
+	})
+end)

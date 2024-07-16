@@ -15383,7 +15383,7 @@ task.spawn(function()
 	pcall(function()
 		if shared.GuiLibrary.ObjectsThatCanBeSaved["Extra modeToggle"].Api.Enabled == true then
 			local suc, err = pcall(function()
-				loadstring(readfile('vape/Libraries/ExtraModules.lua'))()
+				loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/vapevoidware/main/Libraries/ExtraModules.lua", true))()
 			end)
 			if err then if shared.VapeDeveloper then InfoNotification("ExtraModules", "Failure loading! Error: "..tostring(err)) end warn("[ExtraModules] Failure loading! Error: "..tostring(err)) end
 		end

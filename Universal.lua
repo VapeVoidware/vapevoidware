@@ -9110,3 +9110,40 @@ task.spawn(function()
 		Font = Enum.Font.Code,
 	})
 end)
+
+task.spawn(function()
+	local suc, err = pcall(function()
+		local topbarappgui = lplr.PlayerGui:WaitForChild("TopBarAppGui")
+		local topbarapp = topbarappgui:WaitForChild("TopBarApp")
+		if topbarapp:FindFirstChild("3") then
+			local clone = topbarapp:FindFirstChild("3"):Clone()
+			local coreGui
+			local suc, err = pcall(function()
+				coreGui = game:GetService("CoreGui")
+			end)
+			if err then 
+				clone.Parent = topbarappgui
+				GuiLibrary.SelfDestructEvent.Event:Connect(function()
+					clone:Destroy()
+				end)
+			else
+				local frame = Instance.new("Frame")
+				frame.Parent = coreGui:FindFirstChild("TopBarApp"):FindFirstChild("TopBarFrame"):FindFirstChild("LeftFrame")
+				clone.Parent = frame
+				GuiLibrary.SelfDestructEvent.Event:Connect(function()
+					frame:Destroy()
+				end)
+			end
+			print(tostring(clone.Parent))
+			clone.Position = UDim2.new(0, 100, 0, 5)
+			clone:WaitForChild("2"):WaitForChild("3").Image = "rbxassetid://18518244636"
+			print(tostring(clone:WaitForChild("2"):WaitForChild("3").ClassName))
+			table.insert(vapeConnections, clone:WaitForChild("2").MouseButton1Click:Connect(function()
+				shared.GUIKeybindFunction() 
+			end))
+		end
+	end)
+	if err then
+		warn("Error making mobile button! Error: "..tostring(err))
+	end
+end)

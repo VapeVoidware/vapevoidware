@@ -9579,7 +9579,7 @@ run(function()
 		Function = function(calling)
 			if calling then 
 				task.spawn(function()
-				repeat task.wait() until ((isAlive(lplr, true) or not Invisibility.Enabled) and (isEnabled('Lobby Check', 'Toggle') == false or bedwars.matchState ~= 0))
+				repeat task.wait() until ((isAlive(lplr, true) or not Invisibility.Enabled) and (isEnabled('Lobby Check', 'Toggle') == false or store.matchState ~= 0))
 				if not Invisibility.Enabled then 
 					return 
 				end

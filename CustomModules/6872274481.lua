@@ -9607,11 +9607,9 @@ run(function()
 						oldcolor = lplr.Character.HumanoidRootPart.Color
 						lplr.Character.HumanoidRootPart.Color = Color3.fromHSV(visualrootcolor.Hue, visualrootcolor.Sat, visualrootcolor.Value)
 						anim2:Play(0.1, 9e9, 0.1) 
-					else 
-						if Invisibility.Enabled then 
-							Invisibility.ToggleButton() 
-							break 
-						end
+					elseif Invisibility.Enabled then 
+						Invisibility.ToggleButton() 
+						break 
 					end	
 					task.wait()
 				until not Invisibility.Enabled

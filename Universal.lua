@@ -259,6 +259,8 @@ local function run(name, func)
 end
 
 getgenv().run = run
+getgenv().runcode = getgenv().run
+getgenv().runFunction = getgenv().run
 
 local function isFriend(plr, recolor)
 	if GuiLibrary.ObjectsThatCanBeSaved["Use FriendsToggle"].Api.Enabled then
@@ -7997,7 +7999,7 @@ run(function()
 	})
 end)
 
-local ErrorReportCooldown = 0
+--[[local ErrorReportCooldown = 0
 run(function()
 	local ErrorReport = {Enabled = false}
 	local ErrorText = {Value = ""}
@@ -8069,9 +8071,9 @@ run(function()
 		TempText = "Type here your suggestion.",
 		Function = function() end
 	})
-end)
+end)--]]
 
-local StaffFetcherCooldown = 0
+--[[local StaffFetcherCooldown = 0
 run(function()
 	local StaffFetcher = {Enabled = false}
 	local Groupid = {Value = ""}
@@ -8249,7 +8251,7 @@ run(function()
 		["Function"] = function() end, 
 		["Default"] = true
 	})
-end)
+end)--]]
 
 run(function()
 	local GetHash = {}
@@ -8400,8 +8402,8 @@ run(function()
 end)
 run(function()
 	local RestartVoidware = {}
-	RestartVoidware = GuiLibrary.ObjectsThatCanBeSaved.VoidwareWindow.Api.CreateOptionsButton({
-		Name = 'RestartVoidware',
+	RestartVoidware = GuiLibrary.ObjectsThatCanBeSaved.CombatWindow.Api.CreateOptionsButton({
+		Name = 'Restart',
 		Function = function(calling)
 			if calling then 
 				RestartVoidware["ToggleButton"](false) 
@@ -9079,4 +9081,3 @@ end)--]]
 		shared.GUIKeybindFunction() 
 	end))
 end)--]]
-

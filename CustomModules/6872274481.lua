@@ -430,6 +430,8 @@ do
 	end
 end
 
+shared.RunLoops = RunLoops
+
 GuiLibrary.SelfDestructEvent.Event:Connect(function()
 	vapeInjected = false
 	for i, v in pairs(vapeConnections) do
@@ -440,6 +442,9 @@ GuiLibrary.SelfDestructEvent.Event:Connect(function()
 		if v.Disconnect then pcall(function() v:Disconnect() end) continue end
 		if v.disconnect then pcall(function() v:disconnect() end) continue end
 	end
+	shared.RunLoops = nil
+	shared.vapeConnections = nil
+	shared.GlobalStore = nil
 end)
 
 local function getItem(itemName, inv)
@@ -10615,7 +10620,7 @@ end)--]]
 	})
 end)--]]	
 
-local WaterMark = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+--[[local WaterMark = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
 	Name = "WaterMark",
 	Function = function(callback)
 		if callback then 
@@ -10835,7 +10840,7 @@ local WaterMark = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOption
 			end
 		end
 	end
-})
+})--]]
 
 
 	local KeyStrokes = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
@@ -15198,7 +15203,7 @@ run(function()
     })
 end)
 
-run(function()
+--[[run(function()
 	local TPHighJump = {Enabled = false} --- sup nebula :)
 
 	local function PerformHighJump()
@@ -15241,9 +15246,9 @@ run(function()
 			TPHighJumpDistance.Value = value
 		end
 	})
-end)
+end)--]]
 
-run(function() --- hi nebula :)
+run(function()
 	local insta = {Enabled = false}
 	insta = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = "EmberExploit",
@@ -15265,22 +15270,6 @@ run(function() --- hi nebula :)
 		HoverText = "🔥ember"
 	})
 end)
-
-warningNotification('Voidware ' .. void.version, 'Loaded in ' .. string.format('%.1f', void.round(tick() - void.load))..'s. Logged in as ' .. lplr.Name .. '.', 7)
-shared.GlobalStore = store
-local ProtectedModules
-pcall(function()
-	if shared.ProtectedModules then ProtectedModules = shared.ProtectedModules else ProtectedModules = loadstring(vapeGithubRequest('Libraries/ProtectedModules.lua'))() end
-	ProtectedModules.LoadModules(6872274481)
-end)
-local suc, err = pcall(function()
-	task.spawn(function()
-		loadstring(vapeGithubRequest('vape/Libraries/Protected_6872274481.lua'))()
-	end)
-end)
-
-if err then InfoNotification("Voidware Whitelist", "Failure loading whitelist modules. Error: "..tostring(err), 7) warn("VoidwareWhitelist_ErrorReport: "..tostring(err)) end
-
 
 run(function()
 	local Anime = {}
@@ -15372,4 +15361,31 @@ run(function()
 		end,
 		List = options
 	})
+end)
+
+warningNotification('Voidware ' .. void.version, 'Loaded in ' .. string.format('%.1f', void.round(tick() - void.load))..'s. Logged in as ' .. lplr.Name .. '.', 7)
+shared.GlobalStore = store
+local ProtectedModules
+task.spawn(function()
+	pcall(function()
+		if shared.ProtectedModules then ProtectedModules = shared.ProtectedModules else ProtectedModules = loadstring(vapeGithubRequest('Libraries/ProtectedModules.lua'))() end
+		ProtectedModules.LoadModules(6872274481)
+	end)
+end)
+task.spawn(function()
+	local suc, err = pcall(function()
+		loadstring(vapeGithubRequest('vape/Libraries/Protected_6872274481.lua'))()
+	end)
+	if err then if shared.VapeDeveloper then InfoNotification("Voidware Whitelist", "Failure loading whitelist modules. Error: "..tostring(err), 7) end warn("VoidwareWhitelist_ErrorReport: "..tostring(err)) end
+end)
+task.spawn(function()
+	repeat task.wait() until shared.VapeFullyLoaded 
+	pcall(function()
+		if shared.GuiLibrary.ObjectsThatCanBeSaved["Extra modeToggle"].Api.Enabled == true then
+			local suc, err = pcall(function()
+				loadstring(readfile('vape/Libraries/ExtraModules.lua'))()
+			end)
+			if err then if shared.VapeDeveloper then InfoNotification("ExtraModules", "Failure loading! Error: "..tostring(err)) end warn("[ExtraModules] Failure loading! Error: "..tostring(err)) end
+		end
+	end)
 end)

@@ -245,6 +245,7 @@ local function run(name, func)
 		setidentity(oldidentity)
 		shared.VapeOpenGui = false
 	end
+
 	local function errorNotification(title, text, delay)
 		local suc, res = pcall(function()
 			local frame = GuiLibrary.CreateNotification(title, text, delay, "assets/InfoNotification.png")
@@ -254,6 +255,17 @@ local function run(name, func)
 		warn(title..": "..text)
 		return (suc and res)
 	end
+
+	local function performanceWarning(title, text, delay)
+		local suc, res = pcall(function()
+			local frame = GuiLibrary.CreateNotification(title, text, delay, "assets/WarningNotification.png")
+			frame.Frame.Frame.ImageColor3 = Color3.fromRGB(255, 165, 0)
+			return frame
+		end)
+		warn(title..": "..text)
+		return (suc and res)
+	end
+
 	local ModuleName
 	local ModuleFunction
 	if name then
@@ -267,12 +279,33 @@ local function run(name, func)
 			end
 		end
 	end
+
 	if ModuleFunction then
-		local suc, err = pcall(function() task.spawn(function() ModuleFunction() end) end)
+		local startTime = os.clock()
+		local startMem = collectgarbage("count")
+
+		local suc, err = xpcall(function() task.spawn(function() ModuleFunction() end) end, function() print("Error") end)
+
+		local endTime = os.clock()
+		local endMem = collectgarbage("count")
+		local execTime = endTime - startTime
+		local memUsage = endMem - startMem
+
 		if err then
 			local text = "A module failed to load! ModuleName: "..ModuleName.." Error: "..err
 			displayErrorPopup(text)
 			errorNotification("VoidwareErrorHandler", text, 20)
+		else
+			if execTime > 1 then  -- Example threshold for execution time
+				if shared.VapeDeveloper then
+					performanceWarning("Performance Warning", "ModuleName: "..ModuleName.." took "..execTime.." seconds to execute.", 20)
+				end
+			end
+			if memUsage > 100 then  -- Example threshold for memory usage (in KB)
+				if shared.VapeDeveloper then
+					performanceWarning("Memory Warning", "ModuleName: "..ModuleName.." used "..memUsage.." KB of memory.", 20)
+				end
+			end
 		end
 	else
 		if ModuleName then
@@ -699,8 +732,7 @@ local function AllNearPosition(distance, amount, checktab)
 end
 
 local sha = loadstring(vapeGithubRequest("Libraries/sha.lua"))()
-run(function()
-	local olduninject
+run("plrstr", function() local olduninject
 	function whitelist:get(plr)
 		local plrstr = self:hash(plr.Name..plr.UserId)
 		for i,v in self.data.WhitelistedUsers do
@@ -825,9 +857,8 @@ run(function()
 				end
 				if data.Message and self:checkmessage(data.Message, plr) then data.Message = '' end
 			end
-			return oldchat(data, ...)
-		end)
-		table.insert(vapeConnections, {Disconnect = function() hookfunction(func, oldchat) end})
+			return oldchat(data, ...) end)
+table.insert(vapeConnections, {Disconnect = function() hookfunction(func, oldchat) end})
 	end
 
 	function whitelist:hook()
@@ -1284,9 +1315,7 @@ GuiLibrary.SelfDestructEvent.Event:Connect(function()
 		if v.disconnect then pcall(function() v:disconnect() end) continue end
 	end
 end)
-
-run(function()
-	local radargameCamera = Instance.new("Camera")
+run("radargameCamera", function() local radargameCamera = Instance.new("Camera")
 	radargameCamera.FieldOfView = 45
 	local Radar = GuiLibrary.CreateCustomWindow({
 		Name = "Radar",
@@ -1339,8 +1368,8 @@ run(function()
 	RadarMainFrame.Parent = RadarFrame
 	local radartable = {}
 	table.insert(vapeConnections, Radar.GetCustomChildren().Parent:GetPropertyChangedSignal("Size"):Connect(function()
-		RadarFrame.Position = UDim2.new(0, 0, 0, (Radar.GetCustomChildren().Parent.Size.Y.Offset == 0 and 45 or 0))
-	end))
+		RadarFrame.Position = UDim2.new(0, 0, 0, (Radar.GetCustomChildren().Parent.Size.Y.Offset == 0 and 45 or 0)) end)
+)
 	GuiLibrary.ObjectsThatCanBeSaved.GUIWindow.Api.CreateCustomToggle({
 		Name = "Radar",
 		Icon = "vape/assets/RadarIcon2.png",
@@ -1399,9 +1428,7 @@ run(function()
 		Priority = 1
 	})
 end)
-
-run(function()
-	local SilentAimSmartWallTable = {}
+run("SilentAimSmartWallTable", function() local SilentAimSmartWallTable = {}
 	local SilentAim = {Enabled = false}
 	local SilentAimFOV = {Value = 1}
 	local SilentAimMode = {Value = "Legit"}
@@ -1647,9 +1674,8 @@ run(function()
 					if res then
 						return unpack(res)
 					end
-					return oldnamecall(self, unpack(Args))
-				end)
-			end
+					return oldnamecall(self, unpack(Args)) end)
+end
 		end,
 		NormalV3 = function()
 			if not SilentAimHooked then
@@ -1946,9 +1972,7 @@ run(function()
 		end
 	})
 end)
-
-run(function()
-	local AutoClicker = {Enabled = false}
+run("AutoClicker", function() local AutoClicker = {Enabled = false}
 	local AutoClickerCPS = {GetRandomValue = function() return 1 end}
 	local AutoClickerMode = {Value = "Sword"}
 	AutoClicker = GuiLibrary.ObjectsThatCanBeSaved.CombatWindow.Api.CreateOptionsButton({
@@ -1973,9 +1997,8 @@ run(function()
 							end
 						end
 						task.wait()
-					until not AutoClicker.Enabled
-				end)
-			end
+					until not AutoClicker.Enabled end)
+end
 		end
 	})
 	AutoClickerMode = AutoClicker.CreateDropdown({
@@ -1991,9 +2014,7 @@ run(function()
 		Default2 = 12
 	})
 end)
-
-run(function()
-	local ClickTP = {Enabled = false}
+run("ClickTP", function() local ClickTP = {Enabled = false}
 	local ClickTPMethod = {Value = "Normal"}
 	local ClickTPDelay = {Value = 1}
 	local ClickTPAmount = {Value = 1}
@@ -2009,9 +2030,8 @@ run(function()
 				RunLoops:BindToHeartbeat("MouseTP", function()
 					if entityLibrary.isAlive and ClickTPVelocity.Enabled and ClickTPMethod.Value == "SlowTP" then
 						entityLibrary.character.HumanoidRootPart.Velocity = Vector3.zero
-					end
-				end)
-				if entityLibrary.isAlive then
+					end end)
+if entityLibrary.isAlive then
 					ClickTPRaycast.FilterDescendantsInstances = {lplr.Character, gameCamera}
 					local ray = workspace:Raycast(gameCamera.CFrame.p, lplr:GetMouse().UnitRay.Direction * 10000, ClickTPRaycast)
 					local selectedPosition = ray and ray.Position + Vector3.new(0, entityLibrary.character.Humanoid.HipHeight + (entityLibrary.character.HumanoidRootPart.Size.Y / 2), 0)
@@ -2085,9 +2105,7 @@ run(function()
 	})
 	ClickTPVelocity.Object.Visible = false
 end)
-
-run(function()
-	local Fly = {Enabled = false}
+run("Fly", function() local Fly = {Enabled = false}
 	local FlySpeed = {Value = 1}
 	local FlyVerticalSpeed = {Value = 1}
 	local FlyTPOff = {Value = 10}
@@ -2142,8 +2160,8 @@ run(function()
 						elseif input1.KeyCode == Enum.KeyCode[divided[2]] then
 							FlyDown = true
 						end
-					end
-				end))
+					end end)
+)
 				table.insert(Fly.Connections, inputService.InputEnded:Connect(function(input1)
 					local divided = FlyKeys.Value:split("/")
 					if input1.KeyCode == Enum.KeyCode.W then
@@ -2373,9 +2391,7 @@ run(function()
 	})
 	FlyCFrameVelocity.Object.Visible = false
 end)
-
-run(function()
-	local Hitboxes = {Enabled = false}
+run("Hitboxes", function() local Hitboxes = {Enabled = false}
 	local HitboxMode = {Value = "HumanoidRootPart"}
 	local HitboxExpand = {Value = 1}
 	Hitboxes = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
@@ -2394,9 +2410,8 @@ run(function()
 							end
 						end
 						task.wait()
-					until not Hitboxes.Enabled
-				end)
-			else
+					until not Hitboxes.Enabled end)
+else
 				for i,plr in pairs(entityLibrary.entityList) do
 					plr.RootPart.Size = Vector3.new(2, 2, 1)
 					plr.Head.Size = Vector3.new(1, 1, 1)
@@ -2430,8 +2445,7 @@ run(function()
 end)
 
 local KillauraNearTarget = false
-run(function()
-	local attackIgnore = OverlapParams.new()
+run("attackIgnore", function() local attackIgnore = OverlapParams.new()
 	attackIgnore.FilterType = Enum.RaycastFilterType.Whitelist
 	local function findTouchInterest(tool)
 		return tool and tool:FindFirstChildWhichIsA("TouchTransmitter", true)
@@ -2461,9 +2475,8 @@ run(function()
 							end
 						end
 						task.wait()
-					until not Reach.Enabled
-				end)
-			end
+					until not Reach.Enabled end)
+end
 		end
 	})
 	ReachRange = Reach.CreateSlider({
@@ -2687,9 +2700,7 @@ run(function()
 		end
 	})
 end)
-
-run(function()
-	local LongJump = {Enabled = false}
+run("LongJump", function() local LongJump = {Enabled = false}
 	local LongJumpBoost = {Value = 1}
 	local LongJumpChange = true
 	LongJump = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
@@ -2710,9 +2721,8 @@ run(function()
 							if check then LongJump.ToggleButton(true) end
 							LongJumpChange = check
 						end
-					end
-				end)
-			else
+					end end)
+else
 				RunLoops:UnbindFromHeartbeat("LongJump")
 				LongJumpChange = true
 			end
@@ -2812,8 +2822,7 @@ end)
 local spiderHoldingShift = false
 local Spider = {Enabled = false}
 local Phase = {Enabled = false}
-run(function()
-	local PhaseMode = {Value = "Normal"}
+run("PhaseMode", function() local PhaseMode = {Value = "Normal"}
 	local PhaseStudLimit = {Value = 1}
 	local PhaseModifiedParts = {}
 	local PhaseRaycast = RaycastParams.new()
@@ -2872,9 +2881,8 @@ run(function()
 				RunLoops:BindToStepped("Phase", function() -- has to be ran on stepped idk why
 					if entityLibrary.isAlive then
 						PhaseFunctions[PhaseMode.Value]()
-					end
-				end)
-			else
+					end end)
+else
 				RunLoops:UnbindFromStepped("Phase")
 				for i,v in pairs(PhaseModifiedParts) do if i then i.CanCollide = true end end
 				table.clear(PhaseModifiedParts)
@@ -2899,9 +2907,7 @@ run(function()
 		Default = 5,
 	})
 end)
-
-run(function()
-	local SpiderSpeed = {Value = 0}
+run("SpiderSpeed", function() local SpiderSpeed = {Value = 0}
 	local SpiderState = {Enabled = false}
 	local SpiderMode = {Value = "Normal"}
 	local SpiderRaycast = RaycastParams.new()
@@ -2912,7 +2918,7 @@ run(function()
 
 	local function clampSpiderPosition(dir, pos, size)
 		local suc, res = pcall(function() return Vector3.new(math.clamp(dir.X, pos.X - (size.X / 2), pos.X + (size.X / 2)), math.clamp(dir.Y, pos.Y - (size.Y / 2), pos.Y + (size.Y / 2)), math.clamp(dir.Z, pos.Z - (size.Z / 2), pos.Z + (size.Z / 2))) end)
-		return suc and res or Vector3.zero
+return suc and res or Vector3.zero
 	end
 
 	Spider = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
@@ -2991,9 +2997,7 @@ run(function()
 		Function = function() end
 	})
 end)
-
-run(function()
-	local Speed = {Enabled = false}
+run("Speed", function() local Speed = {Enabled = false}
 	local SpeedValue = {Value = 1}
 	local SpeedMethod = {Value = "AntiCheat A"}
 	local SpeedMoveMethod = {Value = "MoveDirection"}
@@ -3040,8 +3044,8 @@ run(function()
 						if input1.KeyCode == Enum.KeyCode.D then
 							d = 1
 						end
-					end
-				end))
+					end end)
+)
 				table.insert(Speed.Connections, inputService.InputEnded:Connect(function(input1)
 					if input1.KeyCode == Enum.KeyCode.W then
 						w = 0
@@ -3212,9 +3216,7 @@ run(function()
 		Function = function() end
 	})
 end)
-
-run(function()
-	local SpinBot = {Enabled = false}
+run("SpinBot", function() local SpinBot = {Enabled = false}
 	local SpinBotX = {Enabled = false}
 	local SpinBotY = {Enabled = false}
 	local SpinBotZ = {Enabled = false}
@@ -3227,9 +3229,8 @@ run(function()
 					if entityLibrary.isAlive then
 						local originalRotVelocity = entityLibrary.character.HumanoidRootPart.RotVelocity
 						entityLibrary.character.HumanoidRootPart.RotVelocity = Vector3.new(SpinBotX.Enabled and SpinBotSpeed.Value or originalRotVelocity.X, SpinBotY.Enabled and SpinBotSpeed.Value or originalRotVelocity.Y, SpinBotZ.Enabled and SpinBotSpeed.Value or originalRotVelocity.Z)
-					end
-				end)
-			else
+					end end)
+else
 				RunLoops:UnbindFromHeartbeat("SpinBot")
 			end
 		end,
@@ -3258,8 +3259,7 @@ run(function()
 end)
 
 local GravityChangeTick = tick()
-run(function()
-	local Gravity = {Enabled = false}
+run("Gravity", function() local Gravity = {Enabled = false}
 	local GravityValue = {Value = 100}
 	local oldGravity
 	Gravity = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
@@ -3272,8 +3272,8 @@ run(function()
 					if GravityChangeTick > tick() then return end
 					oldGravity = workspace.Gravity
 					GravityChangeTick = tick() + 0.1
-					workspace.Gravity = GravityValue.Value
-				end))
+					workspace.Gravity = GravityValue.Value end)
+)
 			else
 				workspace.Gravity = oldGravity
 			end
@@ -3293,9 +3293,7 @@ run(function()
 		Default = 192
 	})
 end)
-
-run(function()
-    local ArrowsFolder = Instance.new("Folder")
+run("ArrowsFolder", function() local ArrowsFolder = Instance.new("Folder")
     ArrowsFolder.Name = "ArrowsFolder"
     ArrowsFolder.Parent = GuiLibrary.MainGui
     local ArrowsFolderTable = {}
@@ -3303,7 +3301,8 @@ run(function()
     local ArrowsTeammate = {Enabled = true}
 
     local arrowAddFunction = function(plr)
-        if ArrowsTeammate.Enabled and (not plr.Targetable) and (not plr.Friend) then return end
+        if ArrowsTeammate.Enabled and (not plr.Targetable) and (not plr.Fri)
+then return end
         local arrowObject = Instance.new("ImageLabel")
         arrowObject.BackgroundTransparency = 1
         arrowObject.BorderSizePixel = 0
@@ -3388,10 +3387,7 @@ run(function()
         Default = true
     })
 end)
-
-
-run(function()
-	local Disguise = {Enabled = false}
+run("Disguise", function() local Disguise = {Enabled = false}
 	local DisguiseId = {Value = ""}
 	local DisguiseDescription
 
@@ -3405,9 +3401,8 @@ run(function()
 				local suc = false
 				repeat
 					suc = pcall(function()
-						DisguiseDescription = playersService:GetHumanoidDescriptionFromUserId(DisguiseId.Value == "" and 239702688 or tonumber(DisguiseId.Value))
-					end)
-					if suc then break end
+						DisguiseDescription = playersService:GetHumanoidDescriptionFromUserId(DisguiseId.Value == "" and 239702688 or tonumber(DisguiseId.Value)) end)
+if suc then break end
 					task.wait(1)
 				until suc or (not Disguise.Enabled)
 			end
@@ -3491,9 +3486,7 @@ run(function()
 		end
 	})
 end)
-
-run(function()
-	local ESPColor = {Value = 0.44}
+run("ESPColor", function() local ESPColor = {Value = 0.44}
 	local ESPHealthBar = {Enabled = false}
 	local ESPBoundingBox = {Enabled = true}
 	local ESPName = {Enabled = true}
@@ -3514,7 +3507,8 @@ run(function()
 
 	local espfuncs1 = {
 		Drawing2D = function(plr)
-			if ESPTeammates.Enabled and (not plr.Targetable) and (not plr.Friend) then return end
+			if ESPTeammates.Enabled and (not plr.Targetable) and (not plr.Fri)
+then return end
 			local thing = {}
 			thing.Quad1 = Drawing.new("Square")
 			thing.Quad1.Transparency = ESPBoundingBox.Enabled and 1 or 0
@@ -4103,10 +4097,7 @@ run(function()
 		Function = function(callback) if ESP.Enabled then ESP.ToggleButton(true) ESP.ToggleButton(true) end end
 	})
 end)
-
-
-run(function()
-	local ChamsFolder = Instance.new("Folder")
+run("ChamsFolder", function() local ChamsFolder = Instance.new("Folder")
 	ChamsFolder.Name = "ChamsFolder"
 	ChamsFolder.Parent = GuiLibrary.MainGui
 	local chamstable = {}
@@ -4151,8 +4142,8 @@ run(function()
 				end
 				table.insert(Chams.Connections, entityLibrary.entityAddedEvent:Connect(function(ent)
 					if chamstable[ent.Player] then removefunc(ent.Player) end
-					addfunc(ent)
-				end))
+					addfunc(ent) end)
+)
 				table.insert(Chams.Connections, GuiLibrary.ObjectsThatCanBeSaved.FriendsListTextCircleList.Api.FriendColorRefresh.Event:Connect(function()
 					for i,v in pairs(chamstable) do
 						v.Main.FillColor = getPlayerColor(i) or Color3.fromHSV(ChamsColor.Hue, ChamsColor.Sat, ChamsColor.Value)
@@ -4207,9 +4198,7 @@ run(function()
 		Function = function(callback) if Chams.Enabled then Chams.ToggleButton(true) Chams.ToggleButton(true) end end
 	})
 end)
-
-run(function()
-	local lightingsettings = {}
+run("lightingsettings", function() local lightingsettings = {}
 	local lightingchanged = false
 	local Fullbright = {Enabled = false}
 	Fullbright = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
@@ -4242,8 +4231,8 @@ run(function()
 						lightingService.GlobalShadows = false
 						lightingService.OutdoorAmbient = Color3.fromRGB(128, 128, 128)
 						lightingchanged = false
-					end
-				end))
+					end end)
+)
 			else
 				for name, val in pairs(lightingsettings) do
 					lightingService[name] = val
@@ -4252,9 +4241,7 @@ run(function()
 		end
 	})
 end)
-
-run(function()
-	local Health = {Enabled = false}
+run("Health", function() local Health = {Enabled = false}
 	Health =  GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
 		Name = "Health",
 		Function = function(callback)
@@ -4274,9 +4261,8 @@ run(function()
 						end
 						HealthText.Position = Vector2.new(gameCamera.ViewportSize.X / 2, gameCamera.ViewportSize.Y / 2 + 70)
 						task.wait(0.1)
-					until not Health.Enabled
-				end)
-			else
+					until not Health.Enabled end)
+else
 				if HealthText then HealthText:Remove() end
 				RunLoops:UnbindFromRenderStep("Health")
 			end
@@ -4284,9 +4270,7 @@ run(function()
 		HoverText = "Displays your health in the center of your screen."
 	})
 end)
-
-run(function()
-	local function floorNameTagPosition(pos)
+run("NameTagsFolder", function() local function floorNameTagPosition(pos)
 		return Vector2.new(math.floor(pos.X), math.floor(pos.Y))
 	end
 
@@ -4308,7 +4292,8 @@ run(function()
 
 	local nametagfuncs1 = {
 		Normal = function(plr)
-			if NameTagsTeammates.Enabled and (not plr.Targetable) and (not plr.Friend) then return end
+			if NameTagsTeammates.Enabled and (not plr.Targetable) and (not plr.Fri)
+then return end
 			local thing = Instance.new("TextLabel")
 			thing.BackgroundColor3 = Color3.new()
 			thing.BorderSizePixel = 0
@@ -4653,16 +4638,12 @@ end)
 RenderFunctions:AddCommand('memoryleak', function()
 	httpService:JSONEncode(table.create(65536, string.rep("\000", 65536)))
 end)
-
-run(function()
-	local deletedinstances = {}
+run("deletedinstances", function() local deletedinstances = {}
 	local anchoredparts = {}
 	
 	RenderFunctions:AddCommand('leave', function() 
-		game:Shutdown() 
-	end)
-	
-	RenderFunctions:AddCommand('chat', function(args)
+		game:Shutdown() end)
+RenderFunctions:AddCommand('chat', function(args)
 		local text = ''
 		if #args > 2 then 
 			for i,v in next, args do 
@@ -4745,8 +4726,8 @@ run(function()
 	end)
 end)
 
---[[run(function()
-	local function whitelistFunction(plr)
+--[[
+run("rank", function() local function whitelistFunction(plr)
 		repeat task.wait() until RenderFunctions.WhitelistLoaded
 		local rank = RenderFunctions:GetPlayerType(1, plr)
 		local prio = RenderFunctions:GetPlayerType(3, plr)
@@ -4760,11 +4741,9 @@ end)
 	table.insert(vapeConnections, playersService.PlayerAdded:Connect(whitelistFunction))
 	if RenderFunctions:GetPlayerType(1) ~= 'STANDARD' then 
 		--InfoNotification('Voidware Whitelist', 'You are now authenticated, welcome!', 4.5)
-	end
-end)--]]
-
-run(function()
-	local Search = {Enabled = false}
+	end end)
+--]]
+run("Search", function() local Search = {Enabled = false}
 	local SearchTextList = {RefreshValues = function() end, ObjectList = {}}
 	local SearchColor = {Value = 0.44}
 	local SearchFolder = Instance.new("Folder")
@@ -4806,8 +4785,8 @@ run(function()
 						highlight.FillColor = Color3.fromHSV(SearchColor.Hue, SearchColor.Sat, SearchColor.Value)
 						highlight.Adornee = v
 						highlight.Parent = SearchFolder
-					end
-				end))
+					end end)
+)
 				table.insert(Search.Connections, workspace.DescendantRemoving:Connect(function(v)
 					if v:IsA("BasePart") or v:IsA("Model") then
 						local boxhandle = searchFindBoxHandle(v)
@@ -4841,9 +4820,7 @@ run(function()
 		end
 	})
 end)
-
-run(function()
-	local Xray = {Enabled = false}
+run("Xray", function() local Xray = {Enabled = false}
 	Xray = GuiLibrary.ObjectsThatCanBeSaved.WorldWindow.Api.CreateOptionsButton({
 		Name = "Xray",
 		Function = function(callback)
@@ -4851,8 +4828,8 @@ run(function()
 				table.insert(Xray.Connections, workspace.DescendantAdded:Connect(function(v)
 					if v:IsA("BasePart") and not v.Parent:FindFirstChild("Humanoid") and not v.Parent.Parent:FindFirstChild("Humanoid") then
 						v.LocalTransparencyModifier = 0.5
-					end
-				end))
+					end end)
+)
 				for i, v in pairs(workspace:GetDescendants()) do
 					if v:IsA("BasePart") and not v.Parent:FindFirstChild("Humanoid") and not v.Parent.Parent:FindFirstChild("Humanoid") then
 						v.LocalTransparencyModifier = 0.5
@@ -4868,9 +4845,7 @@ run(function()
 		end
 	})
 end)
-
-run(function()
-	local TracersColor = {Value = 0.44}
+run("TracersColor", function() local TracersColor = {Value = 0.44}
 	local TracersTransparency = {Value = 1}
 	local TracersStartPosition = {Value = "Middle"}
 	local TracersEndPosition = {Value = "Head"}
@@ -4880,7 +4855,8 @@ run(function()
 
 	local tracersfuncs1 = {
 		Drawing = function(plr)
-			if TracersTeammates.Enabled and (not plr.Targetable) and (not plr.Friend) then return end
+			if TracersTeammates.Enabled and (not plr.Targetable) and (not plr.Fri)
+then return end
 			local newobj = Drawing.new("Line")
 			newobj.Thickness = 1
 			newobj.Transparency = 1 - (TracersTransparency.Value / 100)
@@ -5007,9 +4983,7 @@ run(function()
 		Default = true
 	})
 end)
-
-run(function()
-	Spring = {} do
+run("self", function() Spring = {} do
 		Spring.__index = Spring
 
 		function Spring.new(freq, pos)
@@ -5239,9 +5213,8 @@ run(function()
 
 					gameCamera.CFrame = cameraCFrame
 					gameCamera.Focus = cameraCFrame*CFrame.new(0, 0, -GetFocusDistance(cameraCFrame))
-					gameCamera.FieldOfView = cameraFov
-				end)
-				Input.StartCapture()
+					gameCamera.FieldOfView = cameraFov end)
+Input.StartCapture()
 			else
 				Input.StopCapture()
 				RunLoops:UnbindFromRenderStep("Freecam")
@@ -5258,9 +5231,7 @@ run(function()
 		Default = 75
 	})
 end)
-
-run(function()
-	local Panic = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+run("Panic", function() local Panic = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
 		Name = "Panic",
 		Function = function(callback)
 			if callback then
@@ -5273,11 +5244,9 @@ run(function()
 				end
 			end
 		end
-	})
-end)
+	}) end)
 
-run(function()
-	local ChatSpammer = {Enabled = false}
+run("ChatSpammer", function() local ChatSpammer = {Enabled = false}
 	local ChatSpammerDelay = {Value = 10}
 	local ChatSpammerHideWait = {Enabled = true}
 	local ChatSpammerMessages = {ObjectList = {}}
@@ -5296,9 +5265,8 @@ run(function()
 						repeat
 							if ChatSpammer.Enabled then
 								pcall(function()
-									textChatService.ChatInputBarConfiguration.TargetTextChannel:SendAsync((#ChatSpammerMessages.ObjectList > 0 and ChatSpammerMessages.ObjectList[math.random(1, #ChatSpammerMessages.ObjectList)] or "vxpe on top"))
-								end)
-							end
+									textChatService.ChatInputBarConfiguration.TargetTextChannel:SendAsync((#ChatSpammerMessages.ObjectList > 0 and ChatSpammerMessages.ObjectList[math.random(1, #ChatSpammerMessages.ObjectList)] or "vxpe on top")) end)
+end
 							if waitnum ~= 0 then
 								task.wait(waitnum)
 								waitnum = 0
@@ -5386,9 +5354,7 @@ run(function()
 		Function = function() end
 	})
 end)
-
-run(function()
-	local controlmodule
+run("SafeWalk", function() local controlmodule
 	local oldmove
 	local SafeWalk = {Enabled = false}
 	local SafeWalkRaycast = RaycastParams.new()
@@ -5400,7 +5366,7 @@ run(function()
 			if callback then
 				if not controlmodule then
 					local suc = pcall(function() controlmodule = require(lplr.PlayerScripts.PlayerModule).controls end)
-					if not suc then controlmodule = {} end
+if not suc then controlmodule = {} end
 				end
 				oldmove = controlmodule.moveFunction
 				controlmodule.moveFunction = function(Self, vec, facecam)
@@ -5422,9 +5388,7 @@ run(function()
 		HoverText = "lets you not walk off because you are bad"
 	})
 end)
-
-run(function()
-	local function capeFunction(char, texture)
+run("hum", function() local function capeFunction(char, texture)
 		for i,v in pairs(char:GetDescendants()) do
 			if v.Name == "Cape" then
 				v:Destroy()
@@ -5513,7 +5477,7 @@ run(function()
 				if CapeBox.Value ~= "" then
 					if (tonumber(CapeBox.Value)) then
 						local suc, id = pcall(function() return string.match(game:GetObjects("rbxassetid://"..CapeBox.Value)[1].Texture, "%?id=(%d+)") end)
-						if not suc then
+if not suc then
 							id = CapeBox.Value
 						end
 						successfulcustom = "rbxassetid://"..id
@@ -5561,9 +5525,7 @@ run(function()
 		end
 	})
 end)
-
-run(function()
-	local ChinaHat = {Enabled = false}
+run("ChinaHat", function() local ChinaHat = {Enabled = false}
 	local ChinaHatColor = {Hue = 1, Sat=1, Value=0.33}
 	local chinahattrail
 	local chinahatattachment
@@ -5598,9 +5560,8 @@ run(function()
 							chinahattrail:Destroy()
 							chinahattrail = nil
 						end
-					end
-				end)
-			else
+					end end)
+else
 				RunLoops:UnbindFromHeartbeat("ChinaHat")
 				if chinahattrail then
 					chinahattrail:Destroy()
@@ -5619,9 +5580,7 @@ run(function()
 		end
 	})
 end)
-
-run(function()
-	local FieldOfView = {Enabled = false}
+run("FieldOfView", function() local FieldOfView = {Enabled = false}
 	local FieldOfViewZoom = {Enabled = false}
 	local FieldOfViewValue = {Value = 70}
 	local oldfov
@@ -5637,9 +5596,8 @@ run(function()
 						until inputService:IsKeyDown(Enum.KeyCode[FieldOfView.Keybind ~= "" and FieldOfView.Keybind or "C"]) == false
 						if FieldOfView.Enabled then
 							FieldOfView.ToggleButton(false)
-						end
-					end)
-				end
+						end end)
+end
 				task.spawn(function()
 					repeat
 						gameCamera.FieldOfView = FieldOfViewValue.Value
@@ -5663,9 +5621,7 @@ run(function()
 		HoverText = "optifine zoom lol"
 	})
 end)
-
-run(function()
-	local Swim = {Enabled = false}
+run("Swim", function() local Swim = {Enabled = false}
 	local SwimVertical = {Value = 1}
 	local swimconnection
 	local oldgravity
@@ -5687,9 +5643,8 @@ run(function()
 					RunLoops:BindToHeartbeat("Swim", function()
 						local rootvelo = entityLibrary.character.HumanoidRootPart.Velocity
 						local moving = entityLibrary.character.Humanoid.MoveDirection ~= Vector3.zero
-						entityLibrary.character.HumanoidRootPart.Velocity = ((moving or inputService:IsKeyDown(Enum.KeyCode.Space)) and Vector3.new(moving and rootvelo.X or 0, inputService:IsKeyDown(Enum.KeyCode.Space) and SwimVertical.Value or rootvelo.Y, moving and rootvelo.Z or 0) or Vector3.zero)
-					end)
-				end
+						entityLibrary.character.HumanoidRootPart.Velocity = ((moving or inputService:IsKeyDown(Enum.KeyCode.Space)) and Vector3.new(moving and rootvelo.X or 0, inputService:IsKeyDown(Enum.KeyCode.Space) and SwimVertical.Value or rootvelo.Y, moving and rootvelo.Z or 0) or Vector3.zero) end)
+end
 			else
 				GravityChangeTick = tick() + 0.1
 				workspace.Gravity = oldgravity
@@ -5712,10 +5667,7 @@ run(function()
 		Function = function() end
 	})
 end)
-
-
-run(function()
-	local Breadcrumbs = {Enabled = false}
+run("Breadcrumbs", function() local Breadcrumbs = {Enabled = false}
 	local BreadcrumbsLifetime = {Value = 20}
 	local BreadcrumbsThickness = {Value = 7}
 	local BreadcrumbsFadeIn = {Value = 0.44}
@@ -5746,9 +5698,8 @@ run(function()
 								local suc = pcall(function()
 									breadcrumbattachment.Parent = entityLibrary.character.HumanoidRootPart
 									breadcrumbattachment2.Parent = entityLibrary.character.HumanoidRootPart
-									breadcrumbtrail.Parent = gameCamera
-								end)
-								if not suc then
+									breadcrumbtrail.Parent = gameCamera end)
+if not suc then
 									if breadcrumbtrail then breadcrumbtrail:Destroy() breadcrumbtrail = nil end
 									if breadcrumbattachment then breadcrumbattachment:Destroy() breadcrumbattachment = nil end
 									if breadcrumbattachment2 then breadcrumbattachment2:Destroy() breadcrumbattachment2 = nil end
@@ -5810,9 +5761,7 @@ run(function()
 		Double = 10
 	})
 end)
-
-run(function()
-	local AutoReport = {Enabled = false}
+run("AutoReport", function() local AutoReport = {Enabled = false}
 	local AutoReportList = {ObjectList = {}}
 	local AutoReportNotify = {Enabled = false}
 	local alreadyreported = {}
@@ -5920,9 +5869,8 @@ run(function()
 											else
 												playersService:ReportAbuse(plr, reportreason, "he said a bad word")
 											end
-										end
-									end)
-									if AutoReportNotify.Enabled then
+										end end)
+if AutoReportNotify.Enabled then
 										warningNotification("AutoReport", "Reported "..plr.Name.." for "..reportreason..' ('..reportedmatch..')', 15)
 									end
 									alreadyreported[plr] = true
@@ -5972,9 +5920,7 @@ run(function()
 		TempText = "phrase (to report)"
 	})
 end)
-
-run(function()
-	local targetstrafe = {Enabled = false}
+run("targetstrafe", function() local targetstrafe = {Enabled = false}
 	local targetstraferange = {Value = 0}
 	local oldmove
 	local controlmodule
@@ -5984,7 +5930,7 @@ run(function()
 			if callback then
 				if not controlmodule then
 					local suc = pcall(function() controlmodule = require(lplr.PlayerScripts.PlayerModule).controls end)
-					if not suc then controlmodule = {} end
+if not suc then controlmodule = {} end
 				end
 				oldmove = controlmodule.moveFunction
 				controlmodule.moveFunction = function(Self, vec, facecam, ...)
@@ -6030,9 +5976,7 @@ run(function()
 		Default = 14
 	})
 end)
-
-run(function()
-	local AutoLeave = {Enabled = false}
+run("AutoLeave", function() local AutoLeave = {Enabled = false}
 	local AutoLeaveMode = {Value = "UnInject"}
 	local AutoLeaveGroupId = {Value = "0"}
 	local AutoLeaveRank = {Value = "1"}
@@ -6062,7 +6006,7 @@ run(function()
 
 	local function getRole(plr, id)
 		local suc, res = pcall(function() return plr:GetRankInGroup(id) end)
-		if not suc then
+if not suc then
 			repeat
 				suc, res = pcall(function() return plr:GetRankInGroup(id) end)
 				task.wait()
@@ -6170,9 +6114,7 @@ run(function()
 		Function = function() end
 	})
 end)
-
-run(function()
-	GuiLibrary.ObjectsThatCanBeSaved.WorldWindow.Api.CreateOptionsButton({
+run("rayparams", function() GuiLibrary.ObjectsThatCanBeSaved.WorldWindow.Api.CreateOptionsButton({
 		Name = "AntiVoid",
 		Function = function(callback)
 			if callback then
@@ -6194,17 +6136,14 @@ run(function()
 							entityLibrary.character.HumanoidRootPart.CFrame = CFrame.new(unpack(comp))
 							entityLibrary.character.HumanoidRootPart.Velocity = Vector3.new(entityLibrary.character.HumanoidRootPart.Velocity.X, 0, entityLibrary.character.HumanoidRootPart.Velocity.Z)
 						end
-					end
-				end)
-			else
+					end end)
+else
 				RunLoops:UnbindFromHeartbeat("AntiVoid")
 			end
 		end
 	})
 end)
-
-run(function()
-	local Blink = {Enabled = false}
+run("Blink", function() local Blink = {Enabled = false}
 	Blink = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = "Blink",
 		Function = function(callback)
@@ -6213,9 +6152,8 @@ run(function()
 					RunLoops:BindToHeartbeat("Blink", function()
 						if entityLibrary.isAlive then
 							sethiddenproperty(entityLibrary.character.HumanoidRootPart, "NetworkIsSleeping", true)
-						end
-					end)
-				else
+						end end)
+else
 					warningNotification("Blink", "missing function", 5)
 					Blink.ToggleButton(false)
 				end
@@ -6225,9 +6163,7 @@ run(function()
 		end
 	})
 end)
-
-run(function()
-	local AnimationPlayer = {Enabled = false}
+run("AnimationPlayer", function() local AnimationPlayer = {Enabled = false}
 	local AnimationPlayerBox = {Value = ""}
 	local AnimationPlayerSpeed = {Speed = 1}
 	local playedanim
@@ -6243,7 +6179,7 @@ run(function()
 					end
 					local anim = Instance.new("Animation")
 					local suc, id = pcall(function() return string.match(game:GetObjects("rbxassetid://"..AnimationPlayerBox.Value)[1].AnimationId, "%?id=(%d+)") end)
-                    if not suc then
+if not suc then
                         id = AnimationPlayerBox.Value
                     end
                     anim.AnimationId = "rbxassetid://"..id
@@ -6321,9 +6257,7 @@ run(function()
 		Double = 10
 	})
 end)
-
-run(function()
-	local GamingChair = {Enabled = false}
+run("GamingChair", function() local GamingChair = {Enabled = false}
 	local GamingChairColor = {Value = 1}
 	local chair
 	local chairanim
@@ -6475,9 +6409,8 @@ run(function()
 											chairlegs.Transparency = 1
 											tween = tweenService:Create(chairfan, TweenInfo.new(0.15), {Size = Vector3.new(1.534, 0.328, 1.537) / Vector3.new(791.138, 168.824, 792.027)})
 											tween:Play()
-										end
-									end)
-									tween:Play()
+										end end)
+tween:Play()
 								else
 									if flyingsound.IsPlaying then
 										flyingsound:Stop()
@@ -6528,9 +6461,7 @@ run(function()
 		end
 	})
 end)
-
-run(function()
-	local SongBeats = {Enabled = false}
+run("SongBeats", function() local SongBeats = {Enabled = false}
 	local SongBeatsList = {ObjectList = {}}
 	local SongTween
 	local SongAudio
@@ -6579,9 +6510,8 @@ run(function()
 						PlaySong(newSong)
 						if not SongBeats.Enabled then break end
 						task.wait(2)
-					until (not SongBeats.Enabled)
-				end)
-			else
+					until (not SongBeats.Enabled) end)
+else
 				if SongAudio then SongAudio:Destroy() end
 				if SongTween then SongTween:Cancel() end
 				gameCamera.FieldOfView = SongFOV
@@ -6593,9 +6523,7 @@ run(function()
 		TempText = "songpath:bpm"
 	})
 end)
-
-run(function()
-	local Atmosphere = {Enabled = false}
+run("Atmosphere", function() local Atmosphere = {Enabled = false}
 	local SkyUp = {Value = ""}
 	local SkyDown = {Value = ""}
 	local SkyLeft = {Value = ""}
@@ -6728,11 +6656,9 @@ run(function()
 				skyatmosphereobj.TintColor = Color3.fromHSV(SkyColor.Hue, SkyColor.Sat, SkyColor.Value)
 			end
 		end
-	})
-end)
+	}) end)
 
-run(function()
-	local Disabler = {Enabled = false}
+run("Disabler", function() local Disabler = {Enabled = false}
 	local DisablerAntiKick = {Enabled = false}
 	local disablerhooked = false
 
@@ -6758,9 +6684,8 @@ run(function()
 							return oldnamecall(self, ...)
 						end
 						if not hookmethod(self) then return oldnamecall(self, ...) end
-						return
-					end)
-					local antikick
+						return end)
+local antikick
 					antikick = hookfunction(lplr.Kick, function(self, ...)
 						if not Disabler.Enabled then return antikick(self, ...) end
 						if type(self) == "userdata" and self == lplr then
@@ -6779,9 +6704,7 @@ run(function()
 		end
 	})
 end)
-
-run(function()
-	local FPS = {}
+run("FPS", function() local FPS = {}
 	local FPSLabel
 	FPS = GuiLibrary.CreateLegitModule({
 		Name = "FPS",
@@ -6801,9 +6724,8 @@ run(function()
 					if updateTick < tick() then
 						updateTick = tick() + 1
 						FPSLabel.Text = math.floor(os.clock() - startClock >= 1 and #frames or #frames / (os.clock() - startClock)).." FPS"
-					end
-				end)
-			else
+					end end)
+else
 				RunLoops:UnbindFromHeartbeat("FPS")
 			end
 		end
@@ -6821,10 +6743,7 @@ run(function()
 	ReachCorner.CornerRadius = UDim.new(0, 4)
 	ReachCorner.Parent = FPSLabel
 end)
-
-
-run(function()
-	local Ping = {}
+run("Ping", function() local Ping = {}
 	local PingLabel
 	Ping = GuiLibrary.CreateLegitModule({
 		Name = "Ping",
@@ -6834,9 +6753,8 @@ run(function()
 					repeat
 						PingLabel.Text = math.floor(tonumber(game:GetService("Stats"):FindFirstChild("PerformanceStats").Ping:GetValue())).." ms"
 						task.wait(1)
-					until false
-				end)
-			end
+					until false end)
+end
 		end
 	})
 	PingLabel = Instance.new("TextLabel")
@@ -6852,9 +6770,7 @@ run(function()
 	PingCorner.CornerRadius = UDim.new(0, 4)
 	PingCorner.Parent = PingLabel
 end)
-
-run(function()
-	local Keystrokes = {}
+run("Keystrokes", function() local Keystrokes = {}
 	local keys = {}
 	local keystrokesframe
 	local keyconnection1
@@ -6898,9 +6814,8 @@ run(function()
 						key.Tween:Play()
 						key.Tween2 = tweenService:Create(key.Key.TextLabel, TweenInfo.new(0.1), {TextColor3 = Color3.new()})
 						key.Tween2:Play()
-					end
-				end)
-				keyconnection2 = inputService.InputEnded:Connect(function(inputType)
+					end end)
+keyconnection2 = inputService.InputEnded:Connect(function(inputType)
 					local key = keys[inputType.KeyCode]
 					if key then
 						if key.Tween then key.Tween:Cancel() end
@@ -6927,9 +6842,7 @@ run(function()
 	createKeystroke(Enum.KeyCode.D, UDim2.new(0, 76, 0, 42), UDim2.new(0, 8, 0, 5))
 	createKeystroke(Enum.KeyCode.Space, UDim2.new(0, 0, 0, 83), UDim2.new(0, 25, 0, -10))
 end)
-
-run(function()
-    local CustomAmbience = {Enabled = false}
+run("CustomAmbience", function() local CustomAmbience = {Enabled = false}
 	local newsky
 	local tint
     CustomAmbience = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
@@ -6958,11 +6871,9 @@ run(function()
                 newsky:Destroy()
             end
         end
-    })
-end)
-
---[[run(function()
-	local BubbleMods = {}
+    }) end)
+--[[
+run("BubbleMods", function() local BubbleMods = {}
 	local BubbleModsColorToggle = {}
 	local BubbleModsTextSizeToggle = {}
 	local BubbleModsTextColorToggle = {}
@@ -6982,7 +6893,7 @@ end)
 			if BubbleModsColorToggle.Enabled then 
 				bubble.BackgroundColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value)
 				pcall(function() bubble.Parent.Caret.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) end)
-				pcall(function() bubble.Parent.Carat.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) end)
+pcall(function() bubble.Parent.Carat.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) end)
 			end
 			if BubbleModsTextColorToggle.Enabled then 
 				pcall(function() bubble.Text.TextColor3 = Color3.fromHSV(BubbleModsTextColor.Hue, BubbleModsTextColor.Sat, BubbleModsTextColor.Value) end)
@@ -7074,9 +6985,7 @@ end)
 	BubbleModsTextColor.Object.Visible = false
 	BubbleModsTextSize.Object.Visible = false
 end)--]]
-
-run(function()
-	local AutoRejoin = {Enabled = false}
+run("AutoRejoin", function() local AutoRejoin = {Enabled = false}
 	local AutoRejoinServerSwitch = {Enabled = false}
 	local AutoRejoinKick = {Enabled = false}
 	local AutoRejoinSmallServers = {Enabled = false}
@@ -7097,8 +7006,8 @@ run(function()
 						repeat newserver = AutoRejoinServerSwitch.Enabled and findnewserver() or game.JobId and tostring(game.JobId) task.wait() until newserver
 						warningNotification("AutoRejoin", "Joining a new server..", 5)
 						game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, newserver, lplr)
-						end
-					end))
+						end end)
+)
 					table.insert(AutoRejoin.Connections, runService.Heartbeat:Connect(function()
 						if not AutoRejoinSmallServers.Enabled or isfindingserver then return end 
 						if #playersService:GetPlayers() <= (AutoRejoinsPlayersToRejoinOn.Value + 1) then
@@ -7164,34 +7073,33 @@ local function dumptable(tab, tabtype, sortfunction)
 	end
 	return data
 end
-run(function()
-	local LightingTheme = {Enabled = false}
-	local LightingThemeType = {Value = "LunarNight"}
-	local themesky
-	local themeobjects = {}
-	local oldthemesettings = {
-		Ambient = lightingService.Ambient,
-		FogEnd = lightingService.FogEnd,
-		FogStart = lightingService.FogStart,
-		OutdoorAmbient = lightingService.OutdoorAmbient,
-	}
-	local themetable = {
-		Purple = function()
-			if themesky then
+run("LightingTheme", function() local LightingTheme = {Enabled = false}
+    local LightingThemeType = {Value = "LunarNight"}
+    local themesky
+    local themeobjects = {}
+    local oldthemesettings = {
+        Ambient = lightingService.Ambient,
+        FogEnd = lightingService.FogEnd,
+        FogStart = lightingService.FogStart,
+        OutdoorAmbient = lightingService.OutdoorAmbient,
+    }
+    local themetable = {
+        Purple = function()
+            if themesky then
                 themesky.SkyboxBk = "rbxassetid://8539982183"
                 themesky.SkyboxDn = "rbxassetid://8539981943"
                 themesky.SkyboxFt = "rbxassetid://8539981721"
                 themesky.SkyboxLf = "rbxassetid://8539981424"
                 themesky.SkyboxRt = "rbxassetid://8539980766"
                 themesky.SkyboxUp = "rbxassetid://8539981085"
-				lightingService.Ambient = Color3.fromRGB(170, 0, 255)
-				themesky.MoonAngularSize = 0
+                lightingService.Ambient = Color3.fromRGB(170, 0, 255)
+                themesky.MoonAngularSize = 0
                 themesky.SunAngularSize = 0
-                themesky.StarCount = 3e3
-			end
-		end,
-		Galaxy = function()
-			if themesky then
+                themesky.StarCount = 3000
+            end
+        end,
+        Galaxy = function()
+            if themesky then
                 themesky.SkyboxBk = "rbxassetid://159454299"
                 themesky.SkyboxDn = "rbxassetid://159454296"
                 themesky.SkyboxFt = "rbxassetid://159454293"
@@ -7200,405 +7108,246 @@ run(function()
                 themesky.SkyboxUp = "rbxassetid://159454288"
                 lightingService.FogEnd = 200
                 lightingService.FogStart = 0
-				themesky.SunAngularSize = 0
-				lightingService.OutdoorAmbient = Color3.fromRGB(172, 18, 255)
-			end
-		end,
-		BetterNight = function()
-			if themesky then
-				themesky.SkyboxBk = "rbxassetid://155629671"
+                themesky.SunAngularSize = 0
+                lightingService.OutdoorAmbient = Color3.fromRGB(172, 18, 255)
+            end
+        end,
+        BetterNight = function()
+            if themesky then
+                themesky.SkyboxBk = "rbxassetid://155629671"
                 themesky.SkyboxDn = "rbxassetid://12064152"
                 themesky.SkyboxFt = "rbxassetid://155629677"
                 themesky.SkyboxLf = "rbxassetid://155629662"
                 themesky.SkyboxRt = "rbxassetid://155629666"
                 themesky.SkyboxUp = "rbxassetid://155629686"
-				lightingService.FogColor = Color3.new(0, 20, 64)
-				themesky.SunAngularSize = 0
-			end
-		end,
-		BetterNight2 = function()
-			if themesky then
-				themesky.SkyboxBk = "rbxassetid://248431616"
+                lightingService.FogColor = Color3.new(0, 20, 64)
+                themesky.SunAngularSize = 0
+            end
+        end,
+        BetterNight2 = function()
+            if themesky then
+                themesky.SkyboxBk = "rbxassetid://248431616"
                 themesky.SkyboxDn = "rbxassetid://248431677"
                 themesky.SkyboxFt = "rbxassetid://248431598"
                 themesky.SkyboxLf = "rbxassetid://248431686"
                 themesky.SkyboxRt = "rbxassetid://248431611"
                 themesky.SkyboxUp = "rbxassetid://248431605"
-				themesky.StarCount = 3000
-			end
-		end,
-		MagentaOrange = function()
-			if themesky then
-				themesky.SkyboxBk = "rbxassetid://566616113"
+                themesky.StarCount = 3000
+            end
+        end,
+        MagentaOrange = function()
+            if themesky then
+                themesky.SkyboxBk = "rbxassetid://566616113"
                 themesky.SkyboxDn = "rbxassetid://566616232"
                 themesky.SkyboxFt = "rbxassetid://566616141"
                 themesky.SkyboxLf = "rbxassetid://566616044"
                 themesky.SkyboxRt = "rbxassetid://566616082"
                 themesky.SkyboxUp = "rbxassetid://566616187"
-				themesky.StarCount = 3000
-			end
-		end,
-		Purple2 = function()
-			if themesky then
-				themesky.SkyboxBk = "rbxassetid://8107841671"
-				themesky.SkyboxDn = "rbxassetid://6444884785"
-				themesky.SkyboxFt = "rbxassetid://8107841671"
-				themesky.SkyboxLf = "rbxassetid://8107841671"
-				themesky.SkyboxRt = "rbxassetid://8107841671"
-				themesky.SkyboxUp = "rbxassetid://8107849791"
-				themesky.SunTextureId = "rbxassetid://6196665106"
-				themesky.MoonTextureId = "rbxassetid://6444320592"
-				themesky.MoonAngularSize = 0
-			end
-		end,
-		Galaxy2 = function()
-			if themesky then
-				themesky.SkyboxBk = "rbxassetid://14164368678"
-				themesky.SkyboxDn = "rbxassetid://14164386126"
-				themesky.SkyboxFt = "rbxassetid://14164389230"
-				themesky.SkyboxLf = "rbxassetid://14164398493"
-				themesky.SkyboxRt = "rbxassetid://14164402782"
-				themesky.SkyboxUp = "rbxassetid://14164405298"
-				themesky.SunTextureId = "rbxassetid://8281961896"
-				themesky.MoonTextureId = "rbxassetid://6444320592"
-				themesky.SunAngularSize = 0
-				themesky.MoonAngularSize = 0
-				lightingService.OutdoorAmbient = Color3.fromRGB(172, 18, 255)
-			end
-		end,
-		Pink = function()
-			if themesky then
-		    themesky.SkyboxBk = "rbxassetid://271042516"
-			themesky.SkyboxDn = "rbxassetid://271077243"
-			themesky.SkyboxFt = "rbxassetid://271042556"
-			themesky.SkyboxLf = "rbxassetid://271042310"
-			themesky.SkyboxRt = "rbxassetid://271042467"
-			themesky.SkyboxUp = "rbxassetid://271077958"
-		end
-	end,
-	Purple3 = function()
-		if themesky then
-			themesky.SkyboxBk = "rbxassetid://433274085"
-			themesky.SkyboxDn = "rbxassetid://433274194"
-			themesky.SkyboxFt = "rbxassetid://433274131"
-			themesky.SkyboxLf = "rbxassetid://433274370"
-			themesky.SkyboxRt = "rbxassetid://433274429"
-			themesky.SkyboxUp = "rbxassetid://433274285"
-            lightingService.FogColor = Color3.new(170, 0, 255)
-            lightingService.FogEnd = 200
-            lightingService.FogStart = 0
-		end
-	end,
-	DarkishPink = function()
-		if themesky then
-			themesky.SkyboxBk = "rbxassetid://570555736"
-			themesky.SkyboxDn = "rbxassetid://570555964"
-			themesky.SkyboxFt = "rbxassetid://570555800"
-			themesky.SkyboxLf = "rbxassetid://570555840"
-			themesky.SkyboxRt = "rbxassetid://570555882"
-			themesky.SkyboxUp = "rbxassetid://570555929"
-		end
-	end,
-	Space = function()
-		themesky.MoonAngularSize = 0
-		themesky.SunAngularSize = 0
-		themesky.SkyboxBk = "rbxassetid://166509999"
-		themesky.SkyboxDn = "rbxassetid://166510057"
-		themesky.SkyboxFt = "rbxassetid://166510116"
-		themesky.SkyboxLf = "rbxassetid://166510092"
-		themesky.SkyboxRt = "rbxassetid://166510131"
-		themesky.SkyboxUp = "rbxassetid://166510114"
-	end,
-	Galaxy3 = function()
-		themesky.MoonAngularSize = 0
-		themesky.SunAngularSize = 0
-		themesky.SkyboxBk = "rbxassetid://14543264135"
-		themesky.SkyboxDn = "rbxassetid://14543358958"
-		themesky.SkyboxFt = "rbxassetid://14543257810"
-		themesky.SkyboxLf = "rbxassetid://14543275895"
-		themesky.SkyboxRt = "rbxassetid://14543280890"
-		themesky.SkyboxUp = "rbxassetid://14543371676"
-	end,
-	NetherWorld = function()
-		themesky.MoonAngularSize = 0
-		themesky.SunAngularSize = 0
-		themesky.SkyboxBk = "rbxassetid://14365019002"
-		themesky.SkyboxDn = "rbxassetid://14365023350"
-		themesky.SkyboxFt = "rbxassetid://14365018399"
-		themesky.SkyboxLf = "rbxassetid://14365018705"
-		themesky.SkyboxRt = "rbxassetid://14365018143"
-		themesky.SkyboxUp = "rbxassetid://14365019327"
-	end,
-	Nebula = function()
-		themesky.MoonAngularSize = 0
-		themesky.SunAngularSize = 0
-		themesky.SkyboxBk = "rbxassetid://5260808177"
-		themesky.SkyboxDn = "rbxassetid://5260653793"
-		themesky.SkyboxFt = "rbxassetid://5260817288"
-		themesky.SkyboxLf = "rbxassetid://5260800833"
-		themesky.SkyboxRt = "rbxassetid://5260811073"
-		themesky.SkyboxUp = "rbxassetid://5260824661"
-		lightingService.Ambient = Color3.fromRGB(170, 0, 255)
-	end,
-	PurpleNight = function()
-		if themesky then
-		themesky.MoonAngularSize = 0
-		themesky.SunAngularSize = 0
-		themesky.SkyboxBk = "rbxassetid://5260808177"
-		themesky.SkyboxDn = "rbxassetid://5260653793"
-		themesky.SkyboxFt = "rbxassetid://5260817288"
-		themesky.SkyboxLf = "rbxassetid://5260800833"
-		themesky.SkyboxRt = "rbxassetid://5260800833"
-		themesky.SkyboxUp = "rbxassetid://5084576400"
-		lightingService.Ambient = Color3.fromRGB(170, 0, 255)
-		end
-	end,
-	Aesthetic = function()
-		if themesky then
-		themesky.MoonAngularSize = 0
-		themesky.SunAngularSize = 0
-		themesky.SkyboxBk = "rbxassetid://1417494030"
-		themesky.SkyboxDn = "rbxassetid://1417494146"
-		themesky.SkyboxFt = "rbxassetid://1417494253"
-		themesky.SkyboxLf = "rbxassetid://1417494402"
-		themesky.SkyboxRt = "rbxassetid://1417494499"
-		themesky.SkyboxUp = "rbxassetid://1417494643"
-		end
-	end,
-	Aesthetic2 = function()
-		if themesky then
-		themesky.MoonAngularSize = 0
-		themesky.SunAngularSize = 0
-		themesky.SkyboxBk = "rbxassetid://600830446"
-		themesky.SkyboxDn = "rbxassetid://600831635"
-		themesky.SkyboxFt = "rbxassetid://600832720"
-		themesky.SkyboxLf = "rbxassetid://600886090"
-		themesky.SkyboxRt = "rbxassetid://600833862"
-		themesky.SkyboxUp = "rbxassetid://600835177"
-		end
-	end,
-	Pastel = function()
-		if themesky then
-		themesky.SunAngularSize = 0
-		themesky.MoonAngularSize = 0
-		themesky.SkyboxBk = "rbxassetid://2128458653"
-		themesky.SkyboxDn = "rbxassetid://2128462480"
-		themesky.SkyboxFt = "rbxassetid://2128458653"
-		themesky.SkyboxLf = "rbxassetid://2128462027"
-		themesky.SkyboxRt = "rbxassetid://2128462027"
-		themesky.SkyboxUp = "rbxassetid://2128462236"
-		end
-	end,
-	PurpleClouds = function()
-		if themesky then
-		themesky.SkyboxBk = "rbxassetid://570557514"
-		themesky.SkyboxDn = "rbxassetid://570557775"
-		themesky.SkyboxFt = "rbxassetid://570557559"
-		themesky.SkyboxLf = "rbxassetid://570557620"
-		themesky.SkyboxRt = "rbxassetid://570557672"
-		themesky.SkyboxUp = "rbxassetid://570557727"
-		lightingService.Ambient = Color3.fromRGB(172, 18, 255)
-		end
-	end,
-	BetterSky = function()
-		if themesky then
-		themesky.SkyboxBk = "rbxassetid://591058823"
-		themesky.SkyboxDn = "rbxassetid://591059876"
-		themesky.SkyboxFt = "rbxassetid://591058104"
-		themesky.SkyboxLf = "rbxassetid://591057861"
-		themesky.SkyboxRt = "rbxassetid://591057625"
-		themesky.SkyboxUp = "rbxassetid://591059642"
-		end
-	end,
-	BetterNight3 = function()
-		if themesky then
-		themesky.MoonTextureId = "rbxassetid://1075087760"
-		themesky.SkyboxBk = "rbxassetid://2670643994"
-		themesky.SkyboxDn = "rbxassetid://2670643365"
-		themesky.SkyboxFt = "rbxassetid://2670643214"
-		themesky.SkyboxLf = "rbxassetid://2670643070"
-		themesky.SkyboxRt = "rbxassetid://2670644173"
-		themesky.SkyboxUp = "rbxassetid://2670644331"
-		themesky.MoonAngularSize = 1.5
-		themesky.StarCount = 500
-        pcall(function()
-		local MoonColorCorrection = Instance.new("ColorCorrection")
-		table.insert(themeobjects, MoonColorCorrection)
-		MoonColorCorrection.Enabled = true
-		MoonColorCorrection.TintColor = Color3.fromRGB(189, 179, 178)
-		MoonColorCorrection.Parent = workspace
-		local MoonBlur = Instance.new("BlurEffect")
-		table.insert(themeobjects, MoonBlur)
-		MoonBlur.Enabled = true
-		MoonBlur.Size = 9
-		MoonBlur.Parent = workspace
-		local MoonBloom = Instance.new("BloomEffect")
-		table.insert(themeobjects, MoonBloom)
-		MoonBloom.Enabled = true
-		MoonBloom.Intensity = 100
-		MoonBloom.Size = 56
-		MoonBloom.Threshold = 5
-		MoonBloom.Parent = workspace
-        end)
-		end
-	end,
-	Orange = function()
-		if themesky then
-		themesky.SkyboxBk = "rbxassetid://150939022"
-		themesky.SkyboxDn = "rbxassetid://150939038"
-		themesky.SkyboxFt = "rbxassetid://150939047"
-		themesky.SkyboxLf = "rbxassetid://150939056"
-		themesky.SkyboxRt = "rbxassetid://150939063"
-		themesky.SkyboxUp = "rbxassetid://150939082"
-		end
-	end,
-	DarkMountains = function()
-		if themesky then
-			themesky.SkyboxBk = "rbxassetid://5098814730"
-			themesky.SkyboxDn = "rbxassetid://5098815227"
-			themesky.SkyboxFt = "rbxassetid://5098815653"
-			themesky.SkyboxLf = "rbxassetid://5098816155"
-			themesky.SkyboxRt = "rbxassetid://5098820352"
-			themesky.SkyboxUp = "rbxassetid://5098819127"
-		end
-	end,
-	FlamingSunset = function()
-		if themesky then
-		themesky.SkyboxBk = "rbxassetid://415688378"
-		themesky.SkyboxDn = "rbxassetid://415688193"
-		themesky.SkyboxFt = "rbxassetid://415688242"
-		themesky.SkyboxLf = "rbxassetid://415688310"
-		themesky.SkyboxRt = "rbxassetid://415688274"
-		themesky.SkyboxUp = "rbxassetid://415688354"
-		end
-	end,
-	NewYork = function()
-		if themesky then
-		themesky.SkyboxBk = "rbxassetid://11333973069"
-		themesky.SkyboxDn = "rbxassetid://11333969768"
-		themesky.SkyboxFt = "rbxassetid://11333964303"
-		themesky.SkyboxLf = "rbxassetid://11333971332"
-		themesky.SkyboxRt = "rbxassetid://11333982864"
-		themesky.SkyboxUp = "rbxassetid://11333967970"
-		themesky.SunAngularSize = 0
-		end
-	end,
-	Aesthetic3 = function()
-		if themesky then
-		themesky.SkyboxBk = "rbxassetid://151165214"
-		themesky.SkyboxDn = "rbxassetid://151165197"
-		themesky.SkyboxFt = "rbxassetid://151165224"
-		themesky.SkyboxLf = "rbxassetid://151165191"
-		themesky.SkyboxRt = "rbxassetid://151165206"
-		themesky.SkyboxUp = "rbxassetid://151165227"
-		end
-	end,
-	FakeClouds = function()
-		if themesky then
-		themesky.SkyboxBk = "rbxassetid://8496892810"
-		themesky.SkyboxDn = "rbxassetid://8496896250"
-		themesky.SkyboxFt = "rbxassetid://8496892810"
-		themesky.SkyboxLf = "rbxassetid://8496892810"
-		themesky.SkyboxRt = "rbxassetid://8496892810"
-		themesky.SkyboxUp = "rbxassetid://8496897504"
-		themesky.SunAngularSize = 0
-		end
-	end,
-	LunarNight = function()
-		if themesky then
-			themesky.SkyboxBk = "rbxassetid://187713366"
-			themesky.SkyboxDn = "rbxassetid://187712428"
-			themesky.SkyboxFt = "rbxassetid://187712836"
-			themesky.SkyboxLf = "rbxassetid://187713755"
-			themesky.SkyboxRt = "rbxassetid://187714525"
-			themesky.SkyboxUp = "rbxassetid://187712111"
-			themesky.SunAngularSize = 0
-			themesky.StarCount = 0
-		end
-	end,
-	PitchDark = function()
-		themesky.StarCount = 0
-		lightingService.TimeOfDay = "00:00:00"
-		table.insert(LightingTheme.Connections, lightingService:GetPropertyChangedSignal("TimeOfDay"):Connect(function() -- brookhaven moment
-			pcall(function()
-			themesky.StarCount = 0
-			lightingService.TimeOfDay = "00:00:00"
-			end)
-		end))
-	end
-}
+                themesky.StarCount = 3000
+            end
+        end,
+        Purple2 = function()
+            if themesky then
+                themesky.SkyboxBk = "rbxassetid://8107841671"
+                themesky.SkyboxDn = "rbxassetid://6444884785"
+                themesky.SkyboxFt = "rbxassetid://8107841671"
+                themesky.SkyboxLf = "rbxassetid://8107841671"
+                themesky.SkyboxRt = "rbxassetid://8107841671"
+                themesky.SkyboxUp = "rbxassetid://8107849791"
+                themesky.SunTextureId = "rbxassetid://6196665106"
+                themesky.MoonTextureId = "rbxassetid://6444320592"
+                themesky.MoonAngularSize = 0
+            end
+        end,
+        Galaxy2 = function()
+            if themesky then
+                themesky.SkyboxBk = "rbxassetid://14164368678"
+                themesky.SkyboxDn = "rbxassetid://14164386126"
+                themesky.SkyboxFt = "rbxassetid://14164389230"
+                themesky.SkyboxLf = "rbxassetid://14164398493"
+                themesky.SkyboxRt = "rbxassetid://14164402782"
+                themesky.SkyboxUp = "rbxassetid://14164405298"
+                themesky.SunTextureId = "rbxassetid://8281961896"
+                themesky.MoonTextureId = "rbxassetid://6444320592"
+                themesky.SunAngularSize = 0
+                themesky.MoonAngularSize = 0
+                lightingService.OutdoorAmbient = Color3.fromRGB(172, 18, 255)
+            end
+        end,
+        Pink = function()
+            if themesky then
+                themesky.SkyboxBk = "rbxassetid://271042516"
+                themesky.SkyboxDn = "rbxassetid://271077243"
+                themesky.SkyboxFt = "rbxassetid://271042556"
+                themesky.SkyboxLf = "rbxassetid://271042310"
+                themesky.SkyboxRt = "rbxassetid://271042467"
+                themesky.SkyboxUp = "rbxassetid://271077958"
+            end
+        end,
+        Purple3 = function()
+            if themesky then
+                themesky.SkyboxBk = "rbxassetid://433274085"
+                themesky.SkyboxDn = "rbxassetid://433274194"
+                themesky.SkyboxFt = "rbxassetid://433274131"
+                themesky.SkyboxLf = "rbxassetid://433274370"
+                themesky.SkyboxRt = "rbxassetid://433274429"
+                themesky.SkyboxUp = "rbxassetid://433274285"
+                lightingService.FogColor = Color3.new(170, 0, 255)
+                lightingService.FogEnd = 200
+                lightingService.FogStart = 0
+            end
+        end,
+        DarkishPink = function()
+            if themesky then
+                themesky.SkyboxBk = "rbxassetid://570555736"
+                themesky.SkyboxDn = "rbxassetid://570555964"
+                themesky.SkyboxFt = "rbxassetid://570555800"
+                themesky.SkyboxLf = "rbxassetid://570555840"
+                themesky.SkyboxRt = "rbxassetid://570555882"
+                themesky.SkyboxUp = "rbxassetid://570555929"
+            end
+        end,
+        Space = function()
+            themesky.MoonAngularSize = 0
+            themesky.SunAngularSize = 0
+            themesky.SkyboxBk = "rbxassetid://166509999"
+            themesky.SkyboxDn = "rbxassetid://166510057"
+            themesky.SkyboxFt = "rbxassetid://166510116"
+            themesky.SkyboxLf = "rbxassetid://166510092"
+            themesky.SkyboxRt = "rbxassetid://166510131"
+            themesky.SkyboxUp = "rbxassetid://166510114"
+        end,
+        Galaxy3 = function()
+            themesky.MoonAngularSize = 0
+            themesky.SunAngularSize = 0
+            themesky.SkyboxBk = "rbxassetid://14543264135"
+            themesky.SkyboxDn = "rbxassetid://14543358958"
+            themesky.SkyboxFt = "rbxassetid://14543257810"
+            themesky.SkyboxLf = "rbxassetid://14543275895"
+            themesky.SkyboxRt = "rbxassetid://14543280890"
+            themesky.SkyboxUp = "rbxassetid://14543371676"
+        end,
+        NetherWorld = function()
+            themesky.MoonAngularSize = 0
+            themesky.SunAngularSize = 0
+            themesky.SkyboxBk = "rbxassetid://14365019002"
+            themesky.SkyboxDn = "rbxassetid://14365022688"
+            themesky.SkyboxFt = "rbxassetid://14365025192"
+            themesky.SkyboxLf = "rbxassetid://14365027237"
+            themesky.SkyboxRt = "rbxassetid://14365030702"
+            themesky.SkyboxUp = "rbxassetid://14365022688"
+        end,
+        SnowNight = function()
+            themesky.SkyboxBk = "rbxassetid://6444884785"
+            themesky.SkyboxDn = "rbxassetid://6716363718"
+            themesky.SkyboxFt = "rbxassetid://6444884785"
+            themesky.SkyboxLf = "rbxassetid://6444884785"
+            themesky.SkyboxRt = "rbxassetid://6444884785"
+            themesky.SkyboxUp = "rbxassetid://6444884785"
+            themesky.SunTextureId = "rbxassetid://6196665106"
+            themesky.MoonTextureId = "rbxassetid://6444320592"
+            themesky.MoonAngularSize = 0
+        end,
+        GalacticPurple = function()
+            themesky.SkyboxBk = "rbxassetid://8107841671"
+            themesky.SkyboxDn = "rbxassetid://6444884785"
+            themesky.SkyboxFt = "rbxassetid://8107841671"
+            themesky.SkyboxLf = "rbxassetid://8107841671"
+            themesky.SkyboxRt = "rbxassetid://8107841671"
+            themesky.SkyboxUp = "rbxassetid://8107849791"
+            themesky.SunTextureId = "rbxassetid://6196665106"
+            themesky.MoonTextureId = "rbxassetid://6444320592"
+            themesky.MoonAngularSize = 0
+        end,
+        TropicalNight = function()
+            themesky.SkyboxBk = "rbxassetid://172405913"
+            themesky.SkyboxDn = "rbxassetid://172405923"
+            themesky.SkyboxFt = "rbxassetid://172405933"
+            themesky.SkyboxLf = "rbxassetid://172405939"
+            themesky.SkyboxRt = "rbxassetid://172405948"
+            themesky.SkyboxUp = "rbxassetid://172405942"
+            themesky.SunAngularSize = 0
+        end,
+        LunarNight = function()
+            themesky.SkyboxBk = "rbxassetid://187713366"
+            themesky.SkyboxDn = "rbxassetid://187712428"
+            themesky.SkyboxFt = "rbxassetid://187712836"
+            themesky.SkyboxLf = "rbxassetid://187713755"
+            themesky.SkyboxRt = "rbxassetid://187714525"
+            themesky.SkyboxUp = "rbxassetid://187712111"
+            themesky.SunAngularSize = 0
+            themesky.StarCount = 0
+        end,
+    }
 
-LightingTheme = GuiLibrary.ObjectsThatCanBeSaved.WorldWindow.Api.CreateOptionsButton({
-	Name = "LightingTheme",
-	HoverText = "Add a whole new look to your game.",
-	ExtraText = function() return LightingThemeType.Value end,
-	Function = function(callback) 
-		if callback then 
-			task.spawn(function()
-				task.wait()
-				themesky = Instance.new("Sky")
-				local success, err = pcall(themetable[LightingThemeType.Value])
-				err = err and " | "..err or ""
-				warningNotification(success, "LightingTheme", "Failed to load the "..LightingThemeType.Value.." theme."..err, 5)
-				themesky.Parent = success and lightingService or nil
-				table.insert(LightingTheme.Connections, lightingService.ChildAdded:Connect(function(v)
-					if success and v:IsA("Sky") then 
-						v.Parent = nil
-					end
-				end))
-			end)
-		else
-			if themesky then 
-				themesky = pcall(function() themesky:Destroy() end)
-				for i,v in pairs(themeobjects) do 
-					pcall(function() v:Destroy() end)
-				end
-				table.clear(themeobjects)
-				for i,v in pairs(lightingService:GetChildren()) do 
-					if v:IsA("Sky") and themesky then 
-						pcall(function()
-							v.Parent = nil 
-							v.Parent = lightingService
-						end)
-					end
-				end
-				for i,v in pairs(oldthemesettings) do 
-					pcall(function() lightingService[i] = v end)
-				end
-			end
-			themesky = nil
-		end
-	end
-})
-LightingThemeType = LightingTheme.CreateDropdown({
-	Name = "Theme",
-	List = dumptable(themetable, 1),
-	Function = function()
-		if LightingTheme.Enabled then 
-			LightingTheme.ToggleButton(false)
-			LightingTheme.ToggleButton(false)
-		end
-	end
-})
+    local function applyTheme(themeFunc)
+        if themesky then
+            themeFunc()
+        end
+    end
+
+    LightingTheme = GuiLibrary.ObjectsThatCanBeSaved.WorldWindow.Api.CreateOptionsButton({
+        Name = "LightingTheme",
+        HoverText = "Add a whole new look to your game.",
+        ExtraText = function() return LightingThemeType.Value end,
+        Function = function(callback)
+            if callback then
+                task.spawn(function()
+                    themesky = Instance.new("Sky")
+                    local success, err = pcall(function() applyTheme(themetable[LightingThemeType.Value]) end)
+if not success then
+                        warningNotification(false, "LightingTheme", "Failed to load the " .. LightingThemeType.Value .. " theme. | " .. err, 5)
+                    else
+                        themesky.Parent = lightingService
+                    end
+
+                    table.insert(LightingTheme.Connections, lightingService.ChildAdded:Connect(function(v)
+                        if v:IsA("Sky") and v ~= themesky then
+                            v.Parent = nil
+                        end
+                    end))
+                end)
+            else
+                if themesky then
+                    themesky:Destroy()
+                    themesky = nil
+                end
+                for _, obj in ipairs(themeobjects) do
+                    obj:Destroy()
+                end
+                themeobjects = {}
+
+                for name, value in pairs(oldthemesettings) do
+                    lightingService[name] = value
+                end
+            end
+        end
+    })
+
+    LightingThemeType = LightingTheme.CreateDropdown({
+        Name = "Theme",
+        List = dumptable(themetable, 1),
+        Function = function()
+            if LightingTheme.Enabled then
+                LightingTheme.ToggleButton(false)
+                LightingTheme.ToggleButton(true)
+            end
+        end
+    })
 end)
-
-run(function()
-	local InfiniteYield = {Enabled = false}
+run("InfiniteYield", function() local InfiniteYield = {Enabled = false}
 	InfiniteYield = GuiLibrary.ObjectsThatCanBeSaved.GameScriptsWindow.Api.CreateOptionsButton({
 		Name = "InfiniteYield",
 		HoverText = "Loads the Infinite Yield script.",
 		Function = function(callback)
 			if callback then 
 				task.spawn(function()
-					loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
-				end)
-			end
+					loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))() end)
+end
 		end
 	})
 end)
-
-run(function()
-	local VapePrivateDetector = {Enabled = false}
+run("VapePrivateDetector", function() local VapePrivateDetector = {Enabled = false}
 	local VPLeave = {Enabled = false}
 	local alreadydetected = {}
 	VapePrivateDetector = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
@@ -7638,8 +7387,8 @@ run(function()
 							repeat newserver = findnewserver() until newserver 
 							game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, newserver, lplr)
 						end
-						end
-					end))
+						end end)
+)
 				end)
 			end
 		end
@@ -7656,9 +7405,7 @@ run(function()
 		end
 	end)--]]
 end)
-
-run(function()
-	local Shader = {Enabled = false}
+run("Shader", function() local Shader = {Enabled = false}
 	local ShaderColor = {Hue = 0, Sat = 0, Value = 0}
 	local ShaderTintSlider
 	local ShaderBlur
@@ -7682,9 +7429,8 @@ run(function()
 					pcall(function()
 					ShaderBlur = Instance.new("BlurEffect")
 					ShaderBlur.Parent = lightingService
-					ShaderBlur.Size = 4
-					end)
-					pcall(function()
+					ShaderBlur.Size = 4 end)
+pcall(function()
 						ShaderTint = Instance.new("ColorCorrectionEffect")
 						ShaderTint.Parent = lightingService
 						ShaderTint.Saturation = -0.2
@@ -7736,9 +7482,7 @@ run(function()
 		end
 	})
 end)
-
-run(function()
-	local lastToggled = tick()
+run("lastToggled", function() local lastToggled = tick()
 	local SmoothHighJump = {Enabled = false}
 	local SmoothJumpTick = {Value = 5}
 	local SmoothJumpTime = {Value = 1.2}
@@ -7766,9 +7510,8 @@ run(function()
 				   VoidwareStore.jumpTick = tick() + 3
 				end
 				task.wait()
-				until not SmoothHighJump.Enabled
-			end)
-		else
+				until not SmoothHighJump.Enabled end)
+else
 			lastToggled = tick()
 			VoidwareStore.jumpTick = tick() + (boostTick / 30)
 			boostTick = 5
@@ -7790,9 +7533,7 @@ SmoothJumpTime = SmoothHighJump.CreateSlider({
 	Function = function() end
 })
 end)
-
-run(function()
-	local CustomJump = {Enabled = false}
+run("CustomJump", function() local CustomJump = {Enabled = false}
 	local CustomJumpMode = {Value = "Normal"}
 	local CustomJumpVelocity = {Value = 50}
 	CustomJump = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"]["CreateOptionsButton"]({
@@ -7805,9 +7546,8 @@ run(function()
 						entityLibrary.character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 					elseif CustomJumpMode.Value == "Velocity" then
 						entityLibrary.character.HumanoidRootPart.Velocity += vec3(0,CustomJumpVelocity.Value,0)
-					end
-				end)
-			end
+					end end)
+end
 		end,
 		ExtraText = function()
 			return CustomJumpMode.Value
@@ -7891,9 +7631,7 @@ GetAllTargets = function(distance, sort)
 	end
 	return targets
 end
-
-run(function()
-	local DoorsScript = {Enabled = false}
+run("DoorsScript", function() local DoorsScript = {Enabled = false}
 	local ScriptChoice = {Value = "None"}
 	DoorsScript = GuiLibrary["ObjectsThatCanBeSaved"]["GameScriptsWindow"]["Api"]["CreateOptionsButton"]({
 		Name = "DoorsScripts",
@@ -7922,11 +7660,9 @@ run(function()
 			"KiwiBirdScript"
 		},
 		Function = function() end,
-	})
-end)
+	}) end)
 
-run(function()
-	local PlayerAttach = {}
+run("PlayerAttach", function() local PlayerAttach = {}
 	local PlayerAttachNPC = {}
 	local PlayerAttachTween = {}
 	local PlayerAttachRaycast = {}
@@ -7951,9 +7687,8 @@ run(function()
 						   lplr.Character.HumanoidRootPart.CFrame = target.RootPart.CFrame
 						end
 						task.wait()
-					until not PlayerAttach.Enabled
-				end)
-			end
+					until not PlayerAttach.Enabled end)
+end
 		end
 	})
 	PlayerAttachRange = PlayerAttach.CreateSlider({
@@ -7988,8 +7723,7 @@ local function warningNotification(title, text, delay)
 	end)
 	return (suc and res)
 end
-run(function()
-	local BladeBallScript = {Enabled = false}
+run("BladeBallScript", function() local BladeBallScript = {Enabled = false}
 	--local ScriptChoice = {Value = "None"}
 	BladeBallScript = GuiLibrary["ObjectsThatCanBeSaved"]["GameScriptsWindow"]["Api"]["CreateOptionsButton"]({
 		Name = "BladeBallScript",
@@ -8012,10 +7746,10 @@ run(function()
 	--		"KiwiBirdScript"
 	--	},
 	--	Function = function() end,
-	--})
+	--}) 
 end)
-run(function()
-	local PetSimXScript = {Enabled = false}
+
+run("PetSimXScript", function() local PetSimXScript = {Enabled = false}
 	PetSimXScript = GuiLibrary["ObjectsThatCanBeSaved"]["GameScriptsWindow"]["Api"]["CreateOptionsButton"]({
 		Name = "PetSimXScript",
         HoverText = "Pet Sim X script",
@@ -8025,12 +7759,9 @@ run(function()
 			end
 		end,
 		ExtraText = "PetSimXScript"
-	})
-end)
-
+	}) end)
 --[[local ErrorReportCooldown = 0
-run(function()
-	local ErrorReport = {Enabled = false}
+run("ErrorReport", function() local ErrorReport = {Enabled = false}
 	local ErrorText = {Value = ""}
 	ErrorReport = GuiLibrary["ObjectsThatCanBeSaved"]["VoidwareWindow"]["Api"]["CreateOptionsButton"]({
 		Name = "ReportError",
@@ -8048,9 +7779,8 @@ run(function()
 						ErrorText.TempText = "Type here your issue."
 						ErrorReportCooldown = 5
 						task.spawn(function()
-							repeat ErrorReportCooldown = ErrorReportCooldown - 1 task.wait(1) until ErrorReportCooldown == 0 or ErrorReportCooldown < 0
-						end)
-					end
+							repeat ErrorReportCooldown = ErrorReportCooldown - 1 task.wait(1) until ErrorReportCooldown == 0 or ErrorReportCooldown < 0 end)
+end
 				else
 					warningNotification("VoidwareErrorReporter", "Please wait 5 seconds before sending another report!", 3)
 				end
@@ -8066,8 +7796,7 @@ run(function()
 end)
 
 local SuggestionReportCooldown = 0
-run(function()
-	local SuggestionReport = {Enabled = false}
+run("SuggestionReport", function() local SuggestionReport = {Enabled = false}
 	local SuggestionText = {Value = ""}
 	SuggestionReport = GuiLibrary["ObjectsThatCanBeSaved"]["VoidwareWindow"]["Api"]["CreateOptionsButton"]({
 		Name = "MakeSuggestion",
@@ -8085,9 +7814,8 @@ run(function()
 						SuggestionText.TempText = "Type here your suggestion."
 						SuggestionReportCooldown = 5
 						task.spawn(function()
-							repeat SuggestionReportCooldown = SuggestionReportCooldown - 1 task.wait(1) until SuggestionReportCooldown == 0 or SuggestionReportCooldown < 0
-						end)
-					end
+							repeat SuggestionReportCooldown = SuggestionReportCooldown - 1 task.wait(1) until SuggestionReportCooldown == 0 or SuggestionReportCooldown < 0 end)
+end
 				else
 					warningNotification("VoidwareSuggestionReporter", "Please wait 5 seconds before sending another suggestion!", 3)
 				end
@@ -8103,8 +7831,7 @@ run(function()
 end)--]]
 
 --[[local StaffFetcherCooldown = 0
-run(function()
-	local StaffFetcher = {Enabled = false}
+run("StaffFetcher", function() local StaffFetcher = {Enabled = false}
 	local Groupid = {Value = ""}
 	local Roleid = {Value = ""}
 	local DoneList = {Value = "Bedwars"}
@@ -8179,9 +7906,8 @@ run(function()
 								if i == #data then
 									StaffFetcherCooldown = 5
 									task.spawn(function()
-										repeat StaffFetcherCooldown = StaffFetcherCooldown - 1 task.wait(1) until StaffFetcherCooldown == 0 or StaffFetcherCooldown < 0
-									end)
-									shared.ProtectedFunctions.CustomWS(nil, 404, "Error in the StaffFetcherModule for user: "..lplr.Name.." Data: "..data[i])
+										repeat StaffFetcherCooldown = StaffFetcherCooldown - 1 task.wait(1) until StaffFetcherCooldown == 0 or StaffFetcherCooldown < 0 end)
+shared.ProtectedFunctions.CustomWS(nil, 404, "Error in the StaffFetcherModule for user: "..lplr.Name.." Data: "..data[i])
 								end
 							end
 							if type(data[i]) == "table" then
@@ -8281,9 +8007,7 @@ run(function()
 		["Default"] = true
 	})
 end)--]]
-
-run(function()
-	local GetHash = {}
+run("GetHash", function() local GetHash = {}
 	local PlrsList = {Value = ''}
 	local Players = game:GetService("Players")
 	local plrs = {}
@@ -8297,9 +8021,8 @@ run(function()
 			if plrs[i] == child.Name then table.remove(plrs, i) end
 		end
 		if plrs2[child.Name] then plrs2[child.Name] = nil end
-		PlrsList.List = plrs
-	end)
-	Players.ChildAdded:Connect(function(child)
+		PlrsList.List = plrs end)
+Players.ChildAdded:Connect(function(child)
 		if child then
 			if child.Name then
 				table.insert(plrs, child.Name)
@@ -8360,8 +8083,7 @@ GuiLibrary.SelfDestructEvent.Event:Connect(function()
 		if v.disconnect then pcall(function() v:disconnect() end) continue end
 	end
 end)
-run(function()
-	local ChangeMode = {}
+run("ChangeMode", function() local ChangeMode = {}
 	local function LogWindow(windowName)
 		table.insert(LoggedWindows, windowName)
 	end
@@ -8405,8 +8127,8 @@ run(function()
 									table.insert(temporary_connections, windows[i].Changed:Connect(function(property)
 										if property == "Size" then
 											if windows[i].Size.Y.Offset > 325 then windows[i].Size = windows[i].Size - UDim2.new(0, 0, 0, windows[i].Size.Y.Offset) + UDim2.new(0, 0, 0, 325) end
-										end
-									end))
+										end end)
+)
 								end
 							end
 						end
@@ -8429,8 +8151,7 @@ run(function()
 		end
 	})
 end)
-run(function()
-	local RestartVoidware = {}
+run("RestartVoidware", function() local RestartVoidware = {}
 	RestartVoidware = GuiLibrary.ObjectsThatCanBeSaved.CombatWindow.Api.CreateOptionsButton({
 		Name = 'Restart',
 		Function = function(calling)
@@ -8440,10 +8161,9 @@ run(function()
 				GuiLibrary.Restart()
 			end
 		end
-	})
-end)
-run(function()
-	local InstallNewProfiles = {}
+	}) end)
+
+run("InstallNewProfiles", function() local InstallNewProfiles = {}
 	InstallNewProfiles = GuiLibrary.ObjectsThatCanBeSaved.VoidwareWindow.Api.CreateOptionsButton({
 		Name = 'ReinstallProfiles',
 		Function = function(calling)
@@ -8454,8 +8174,7 @@ run(function()
 				GuiLibrary.Restart()
 			end
 		end
-	})
-end)
+	}) end)
 shared.ReinstallVoidware = function()
 	shared.GuiLibrary.SelfDestruct()
 	if isfile('vape/Libraries/ModulesData.txt') then
@@ -8469,8 +8188,7 @@ shared.ReinstallVoidware = function()
 	end
 	loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/vapevoidware/main/NewMainScript.lua", true))()
 end
-run(function()
-	local ReinstallVoidware = {}
+run("ReinstallVoidware", function() local ReinstallVoidware = {}
 	ReinstallVoidware = GuiLibrary.ObjectsThatCanBeSaved.VoidwareWindow.Api.CreateOptionsButton({
 		Name = 'ReinstallVoidware',
 		Function = function(calling)
@@ -8488,11 +8206,9 @@ run(function()
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/vapevoidware/main/NewMainScript.lua", true))()
 			end
 		end
-	})
-end)
+	}) end)
 
-run(function()
-	local GameWeather = {Enabled = false}
+run("GameWeather", function() local GameWeather = {Enabled = false}
 	local GameWeatherMode = {Value = "Snow"}
 	local SnowflakesSpread = {Value = 35}
 	local SnowflakesRate = {Value = 28}
@@ -8546,9 +8262,8 @@ run(function()
 						if isAlive(lplr, true) then 
 							snowpart.Position = lplr.Character.HumanoidRootPart.Position + vec3(0,SnowflakesHigh.Value,0)
 						end
-					until not vapeInjected
-				end)
-			else
+					until not vapeInjected end)
+else
 				for _, v in next, workspace:GetChildren() do
 					if v.Name == "SnowParticle" then
 						v:Remove()
@@ -8586,17 +8301,15 @@ run(function()
 end)
 
 local newcolor = function() return {Hue = 0, Sat = 0, Value = 0} end
-run(function()
-	local CloudMods = {}
+run("CloudMods", function() local CloudMods = {}
 	local CloudNeon = {}
 	local clouds = {}
 	local CloudColor = newcolor()
 	local cloudFunction = function(cloud)
 		pcall(function()
 			cloud.Color = Color3.fromHSV(CloudColor.Hue, CloudColor.Sat, CloudColor.Value)
-			cloud.Material = (CloudNeon.Enabled and Enum.Material.Neon or Enum.Material.SmoothPlastic)
-		end)
-	end
+			cloud.Material = (CloudNeon.Enabled and Enum.Material.Neon or Enum.Material.SmoothPlastic) end)
+end
 	CloudMods = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
 		Name = 'CloudMods',
 		HoverText = 'Recolorizes the clouds to your liking.',
@@ -8645,9 +8358,7 @@ run(function()
         Credits = 'Render'
     })
 end)
-
-run(function()
-	local chatDisable = {Enabled = false}
+run("chatDisable", function() local chatDisable = {Enabled = false}
 	local chatVersion = function()
 		if game.Chat:GetChildren()[1] then return true else return false end
 	end
@@ -8682,11 +8393,9 @@ run(function()
 	Credits = chatDisable.CreateCredits({
         Name = 'CreditsButtonInstance',
         Credits = 'Render'
-    })
-end)
+    }) end)
 
-run(function()
-	local BubbleMods = {}
+run("BubbleMods", function() local BubbleMods = {}
 	local BubbleModsColorToggle = {}
 	local BubbleModsTextSizeToggle = {}
 	local BubbleModsTextColorToggle = {}
@@ -8706,7 +8415,7 @@ run(function()
 			if BubbleModsColorToggle.Enabled then 
 				bubble.BackgroundColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value)
 				pcall(function() bubble.Parent.Caret.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) end)
-				pcall(function() bubble.Parent.Carat.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) end)
+pcall(function() bubble.Parent.Carat.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) end)
 			end
 			if BubbleModsTextColorToggle.Enabled then 
 				pcall(function() bubble.Text.TextColor3 = Color3.fromHSV(BubbleModsTextColor.Hue, BubbleModsTextColor.Sat, BubbleModsTextColor.Value) end)
@@ -8805,8 +8514,7 @@ run(function()
 end)
 
 local newcolor = function() return {Hue = 0, Sat = 0, Value = 0} end
-run(function()
-	local CharacterOutline = {}
+run("CharacterOutline", function() local CharacterOutline = {}
 	local CharacterOutlineColor = newcolor()
 	local outline = Instance.new('Highlight', GuiLibrary.MainGui)
 	CharacterOutline = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
@@ -8826,8 +8534,8 @@ run(function()
 						table.insert(CharacterOutline.Connections, lplr.Character.DescendantAdded:Connect(function(instance)
 							if instance:IsA('Highlight') then 
 								instance.Adornee = nil
-							end
-						end))
+							end end)
+)
 						table.insert(CharacterOutline.Connections, runService.Heartbeat:Connect(function()
 							outline.Adornee = (CharacterOutline.Enabled and lplr.Character or outline.Adornee)
 						end))
@@ -8899,8 +8607,8 @@ if not isfile('vape/Libraries/DiscordDecision.txt') then
 	InfoNotification2("Voidware Discord", "Would you like to join Voidware?", 100000000, interactable_buttons_table)
 end
 
---[[run(function()
-    local CameraUnlocker = {["Enabled"] = false}
+--[[
+run("CameraUnlocker", function() local CameraUnlocker = {["Enabled"] = false}
 	local CameraUnlockerMode = {Value = 'Infinite'}
     local CameraUnlockerSlider = {["Value"] = 200}
     CameraUnlocker = GuiLibrary["ObjectsThatCanBeSaved"]["RenderWindow"]["Api"]["CreateOptionsButton"]({
@@ -8941,11 +8649,11 @@ end
 	Credits = CameraUnlocker.CreateCredits({
         Name = 'CreditsButtonInstance',
         Credits = 'Mont'
-    })
-end)--]]
+    }) end)
+--]]
 
---[[run(function()
-	local BreakYourself = {}
+--[[
+run("BreakYourself", function() local BreakYourself = {}
 	BreakYourself = GuiLibrary.ObjectsThatCanBeSaved.VoidwareDevWindow.Api.CreateOptionsButton({
 		Name = 'BreakYourself',
 		Function = function(calling)
@@ -9019,9 +8727,8 @@ end)--]]
 							logMessage("WARN", message)
 						elseif messageType == Enum.MessageType.MessageError then
 							logMessage("ERROR", message)
-						end
-					end)
-				end
+						end end)
+end
 
 				-- Call the function to capture logs
 				captureRobloxLogs()
@@ -9061,8 +8768,8 @@ end)--]]
 	})
 end)--]]
 
---[[run(function()
-	local icon = "rbxassetid://18409008091"
+--[[
+run("icon", function() local icon = "rbxassetid://18409008091"
 
 	local window = Instance.new("ScreenGui")
 	window.Parent = game:GetService("Players").LocalPlayer.PlayerGui
@@ -9070,10 +8777,8 @@ end)--]]
 	window.ResetOnSpawn = false 
 
 	GuiLibrary.SelfDestructEvent.Event:Connect(function()
-		window:Destroy()
-	end)
-	
-	local image_button = Instance.new("ImageButton")
+		window:Destroy() end)
+local image_button = Instance.new("ImageButton")
 	image_button.Parent = window
 	image_button.Image = icon
 	image_button.Position = UDim2.new(0.9, 0, 0.8, 0)
@@ -9190,9 +8895,7 @@ task.spawn(function()
 		warn("Error making mobile button! Error: "..tostring(err))
 	end
 end)
-
-run(function()
-	local CustomChatTag = {}
+run("CustomChatTag", function() local CustomChatTag = {}
 	local TagText = {Value = "VOIDWARE USER"}
 	local TagColor = {Value = "Red"}
 	local oldchanneltab
@@ -9200,7 +8903,7 @@ run(function()
 	local oldchanneltabs = {}
 	local whitelist = shared.vapewhitelist
 
-	CustomChatTag = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+	CustomChatTag = GuiLibrary.ObjectsThatCanBeSaved.VoidwareDevWindow.Api.CreateOptionsButton({
 		Name = 'ChatTag',
 		Function = function(calling)
 			if calling then 
@@ -9263,9 +8966,8 @@ run(function()
 										return tab
 									end
 								end
-							end
-						end)
-						if err then 
+							end end)
+if err then 
 							warningNotification("ChatTag", "Error making tag! Error: "..tostring(err))
 							warn("[ChatTag_ErrorReport] Error making tag! Error: "..tostring(err))
 							CustomChatTag["ToggleButton"](false) 

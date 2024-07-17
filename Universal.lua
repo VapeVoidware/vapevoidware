@@ -42,6 +42,35 @@ local isfile = isfile or function(file)
 	return suc and res ~= nil
 end
 
+local colors = {
+    White = Color3.fromRGB(255, 255, 255),
+    Black = Color3.fromRGB(0, 0, 0),
+    Red = Color3.fromRGB(255, 0, 0),
+    Green = Color3.fromRGB(0, 255, 0),
+    Blue = Color3.fromRGB(0, 0, 255),
+    Yellow = Color3.fromRGB(255, 255, 0),
+    Cyan = Color3.fromRGB(0, 255, 255),
+    Magenta = Color3.fromRGB(255, 0, 255),
+    Gray = Color3.fromRGB(128, 128, 128),
+    DarkGray = Color3.fromRGB(64, 64, 64),
+    LightGray = Color3.fromRGB(192, 192, 192),
+    Orange = Color3.fromRGB(255, 165, 0),
+    Pink = Color3.fromRGB(255, 192, 203),
+    Purple = Color3.fromRGB(128, 0, 128),
+    Brown = Color3.fromRGB(139, 69, 19),
+    LimeGreen = Color3.fromRGB(50, 205, 50),
+    NavyBlue = Color3.fromRGB(0, 0, 128),
+    Olive = Color3.fromRGB(128, 128, 0),
+    Teal = Color3.fromRGB(0, 128, 128),
+    Maroon = Color3.fromRGB(128, 0, 0),
+    Gold = Color3.fromRGB(255, 215, 0),
+    Silver = Color3.fromRGB(192, 192, 192),
+    SkyBlue = Color3.fromRGB(135, 206, 235),
+    Violet = Color3.fromRGB(238, 130, 238)
+}
+
+getgenv().ColorTable = colors
+
 if readfile == nil then
 	task.spawn(error, 'Voidware - Exploit not supported. Your exploit doesn\'t have filesystem support.')
 	while task.wait() do end
@@ -9116,34 +9145,148 @@ task.spawn(function()
 		local topbarappgui = lplr.PlayerGui:WaitForChild("TopBarAppGui")
 		local topbarapp = topbarappgui:WaitForChild("TopBarApp")
 		if topbarapp:FindFirstChild("3") then
-			local clone = topbarapp:FindFirstChild("3"):Clone()
-			local coreGui
-			local suc, err = pcall(function()
-				coreGui = game:GetService("CoreGui")
-			end)
-			if err then 
-				clone.Parent = topbarappgui
-				GuiLibrary.SelfDestructEvent.Event:Connect(function()
-					clone:Destroy()
-				end)
-			else
-				local frame = Instance.new("Frame")
-				frame.Parent = coreGui:FindFirstChild("TopBarApp"):FindFirstChild("TopBarFrame"):FindFirstChild("LeftFrame")
-				clone.Parent = frame
-				GuiLibrary.SelfDestructEvent.Event:Connect(function()
-					frame:Destroy()
-				end)
+			local thing_to_clone
+			for i,v in pairs(topbarapp:GetChildren()) do
+				if topbarapp:GetChildren()[i].ClassName == "Frame" then
+					if topbarapp:GetChildren()[i]:FindFirstChild("2"):FindFirstChild("3") and topbarapp:GetChildren()[i]:FindFirstChild("2"):FindFirstChild("3").ClassName == "ImageLabel" then
+						if topbarapp:GetChildren()[i]:FindFirstChild("2"):FindFirstChild("3").Image == "rbxassetid://8531706273" then
+							thing_to_clone = topbarapp:GetChildren()[i]
+							break
+						end
+					end
+				end
 			end
-			print(tostring(clone.Parent))
-			clone.Position = UDim2.new(0, 100, 0, 5)
-			clone:WaitForChild("2"):WaitForChild("3").Image = "rbxassetid://18518244636"
-			print(tostring(clone:WaitForChild("2"):WaitForChild("3").ClassName))
-			table.insert(vapeConnections, clone:WaitForChild("2").MouseButton1Click:Connect(function()
-				shared.GUIKeybindFunction() 
-			end))
+			local clone
+			if thing_to_clone then
+				clone = thing_to_clone:Clone() 
+				local coreGui
+				local suc, err = pcall(function()
+					coreGui = game:GetService("CoreGui")
+				end)
+				if err then 
+					clone.Parent = topbarappgui
+					GuiLibrary.SelfDestructEvent.Event:Connect(function()
+						clone:Destroy()
+					end)
+				else
+					local frame = Instance.new("Frame")
+					frame.Parent = coreGui:FindFirstChild("TopBarApp"):FindFirstChild("TopBarFrame"):FindFirstChild("LeftFrame")
+					clone.Parent = frame
+					GuiLibrary.SelfDestructEvent.Event:Connect(function()
+						frame:Destroy()
+					end)
+				end
+				print(tostring(clone.Parent))
+				clone.Position = UDim2.new(0, 100, 0, 5)
+				clone:WaitForChild("2"):WaitForChild("3").Image = "rbxassetid://18518244636"
+				print(tostring(clone:WaitForChild("2"):WaitForChild("3").ClassName))
+				table.insert(vapeConnections, clone:WaitForChild("2").MouseButton1Click:Connect(function()
+					shared.GUIKeybindFunction() 
+				end))
+			end
 		end
 	end)
 	if err then
 		warn("Error making mobile button! Error: "..tostring(err))
 	end
+end)
+
+--[[run(function()
+	local CustomChatTag = {}
+	local TagText = {Value = "VOIDWARE USER"}
+	local TagColor = {Value = "Red"}
+	local oldchanneltab
+	local oldchannelfunc
+	local oldchanneltabs = {}
+	local whitelist = shared.vapewhitelist
+
+	CustomChatTag = GuiLibrary.ObjectsThatCanBeSaved.VoidwareDevWindow.Api.CreateOptionsButton({
+		Name = 'ChatTag',
+		Function = function(calling)
+			if calling then 
+				--shared.vapewhitelist.customtags[lplr.Name] = nil
+				whitelist.customtags[lplr.Name] = {{text = TagText.Value, color = ColorTable[TagColor.Value]}}
+			else
+				whitelist.customtags[lplr.Name] = nil
+			end
+		end,
+		HoverText = "Gives you custom chat tag which only you can see"
+	})
+
+	TagText = CustomChatTag.CreateTextBox({
+		Name = "Your tag's text",
+		TempText = "Type here what you want your tag to be",
+		Default = "VOIDWARE USER",
+		Function = function() end
+	})
+
+	local color_table = {}
+	for i,v in pairs(colors) do table.insert(color_table, i) end
+
+	TagColor = CustomChatTag.CreateDropdown({
+		Name = "TagColor",
+		List = color_table,
+		Default = "Red",
+		Function = function() end
+	})
+end)--]]
+
+run(function()
+	task.spawn(function()
+		repeat task.wait() until shared.vapewhitelist.loaded 
+		if shared.vapewhitelist:get(lplr) ~= 0 then 
+			local Players = game:GetService("Players")
+			local ReplicatedStorage = game:GetService("ReplicatedStorage")
+			local yes = Players.LocalPlayer.Name
+			local ChatTag = {}
+			ChatTag[yes] =
+				{
+					TagText = "VOIDWARE USER",
+					TagColor = Color3.fromRGB(255, 0, 0),
+				}
+			local oldchanneltab
+			local oldchannelfunc
+			local oldchanneltabs = {}
+			for i, v in pairs(getconnections(ReplicatedStorage.DefaultChatSystemChatEvents.OnNewMessage.OnClientEvent)) do
+				if
+					v.Function
+					and #debug.getupvalues(v.Function) > 0
+					and type(debug.getupvalues(v.Function)[1]) == "table"
+					and getmetatable(debug.getupvalues(v.Function)[1])
+					and getmetatable(debug.getupvalues(v.Function)[1]).GetChannel
+				then
+					oldchanneltab = getmetatable(debug.getupvalues(v.Function)[1])
+					oldchannelfunc = getmetatable(debug.getupvalues(v.Function)[1]).GetChannel
+					getmetatable(debug.getupvalues(v.Function)[1]).GetChannel = function(Self, Name)
+						local tab = oldchannelfunc(Self, Name)
+						if tab and tab.AddMessageToChannel then
+							local addmessage = tab.AddMessageToChannel
+							if oldchanneltabs[tab] == nil then
+								oldchanneltabs[tab] = tab.AddMessageToChannel
+							end
+							tab.AddMessageToChannel = function(Self2, MessageData)
+								if MessageData.FromSpeaker and Players[MessageData.FromSpeaker] then
+									if ChatTag[Players[MessageData.FromSpeaker].Name] then
+										MessageData.ExtraData = {
+											NameColor = Players[MessageData.FromSpeaker].Team == nil and Color3.new(128,0,128)
+												or Players[MessageData.FromSpeaker].TeamColor.Color,
+											Tags = {
+												table.unpack(MessageData.ExtraData.Tags),
+												{
+													TagColor = ChatTag[Players[MessageData.FromSpeaker].Name].TagColor,
+													TagText = ChatTag[Players[MessageData.FromSpeaker].Name].TagText,
+												},
+											},
+										}
+									end
+								end
+								return addmessage(Self2, MessageData)
+							end
+						end
+						return tab
+					end
+				end
+			end	
+		end
+	end)
 end)

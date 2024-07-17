@@ -9191,7 +9191,7 @@ task.spawn(function()
 	end
 end)
 
---[[run(function()
+run(function()
 	local CustomChatTag = {}
 	local TagText = {Value = "VOIDWARE USER"}
 	local TagColor = {Value = "Red"}
@@ -9204,10 +9204,79 @@ end)
 		Name = 'ChatTag',
 		Function = function(calling)
 			if calling then 
-				--shared.vapewhitelist.customtags[lplr.Name] = nil
-				whitelist.customtags[lplr.Name] = {{text = TagText.Value, color = ColorTable[TagColor.Value]}}
+				task.spawn(function()
+					repeat task.wait() until shared.vapewhitelist.loaded 
+					if shared.vapewhitelist:get(lplr) ~= 0 then 
+						warningNotification("ChatTag", "Whitelisted users cannot use this module! Sorry", 3)
+						CustomChatTag["ToggleButton"](false) 
+					end
+					if TagText.Value then
+						local suc, err = pcall(function()
+							local Players = game:GetService("Players")
+							local ReplicatedStorage = game:GetService("ReplicatedStorage")
+							local yes = Players.LocalPlayer.Name
+							local ChatTag = {}
+							ChatTag[yes] =
+								{
+									TagText = TagText.Value,
+									TagColor = ColorTable[TagColor.Value],
+								}
+							local oldchanneltab
+							local oldchannelfunc
+							local oldchanneltabs = {}
+							for i, v in pairs(getconnections(ReplicatedStorage.DefaultChatSystemChatEvents.OnNewMessage.OnClientEvent)) do
+								if
+									v.Function
+									and #debug.getupvalues(v.Function) > 0
+									and type(debug.getupvalues(v.Function)[1]) == "table"
+									and getmetatable(debug.getupvalues(v.Function)[1])
+									and getmetatable(debug.getupvalues(v.Function)[1]).GetChannel
+								then
+									oldchanneltab = getmetatable(debug.getupvalues(v.Function)[1])
+									oldchannelfunc = getmetatable(debug.getupvalues(v.Function)[1]).GetChannel
+									getmetatable(debug.getupvalues(v.Function)[1]).GetChannel = function(Self, Name)
+										local tab = oldchannelfunc(Self, Name)
+										if tab and tab.AddMessageToChannel then
+											local addmessage = tab.AddMessageToChannel
+											if oldchanneltabs[tab] == nil then
+												oldchanneltabs[tab] = tab.AddMessageToChannel
+											end
+											tab.AddMessageToChannel = function(Self2, MessageData)
+												if MessageData.FromSpeaker and Players[MessageData.FromSpeaker] then
+													if ChatTag[Players[MessageData.FromSpeaker].Name] then
+														MessageData.ExtraData = {
+															NameColor = Players[MessageData.FromSpeaker].Team == nil and Color3.new(128,0,128)
+																or Players[MessageData.FromSpeaker].TeamColor.Color,
+															Tags = {
+																table.unpack(MessageData.ExtraData.Tags),
+																{
+																	TagColor = ChatTag[Players[MessageData.FromSpeaker].Name].TagColor,
+																	TagText = ChatTag[Players[MessageData.FromSpeaker].Name].TagText,
+																},
+															},
+														}
+													end
+												end
+												return addmessage(Self2, MessageData)
+											end
+										end
+										return tab
+									end
+								end
+							end
+						end)
+						if err then 
+							warningNotification("ChatTag", "Error making tag! Error: "..tostring(err))
+							warn("[ChatTag_ErrorReport] Error making tag! Error: "..tostring(err))
+							CustomChatTag["ToggleButton"](false) 
+						end
+					else
+						warningNotification("ChatTag", "Please specify the chat tag name!", 3)
+						CustomChatTag["ToggleButton"](false) 
+					end
+				end)
 			else
-				whitelist.customtags[lplr.Name] = nil
+				warningNotification("ChatTag", "Will apply new changes in the next game!", 3)
 			end
 		end,
 		HoverText = "Gives you custom chat tag which only you can see"
@@ -9229,10 +9298,11 @@ end)
 		Default = "Red",
 		Function = function() end
 	})
-end)--]]
-
-run(function()
-	task.spawn(function()
+end)
+task.spawn(function()
+	repeat task.wait() until shared.VapeFullyLoaded
+	if shared.GuiLibrary.ObjectsThatCanBeSaved["ChatTagOptionsButton"].Api.Enabled then
+	else
 		repeat task.wait() until shared.vapewhitelist.loaded 
 		if shared.vapewhitelist:get(lplr) ~= 0 then 
 			local Players = game:GetService("Players")
@@ -9288,5 +9358,5 @@ run(function()
 				end
 			end	
 		end
-	end)
+	end
 end)

@@ -9127,10 +9127,10 @@ run("CustomIcon", function()
     local IconID = {Value = ""}
     local defaultID = "rbxassetid://18518244636"
     CustomIcon = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
-        Name = 'PlayerListIcon',
+        Name = 'CustomPlayerListIcon',
         Function = function(calling)
             if calling then 
-                CustomIcon["ToggleButton"](false) 
+                --CustomIcon["ToggleButton"](false) 
                 if string.find(IconID.Value, "rbxassetid://") then
                     setIconID(iconId)
 				elseif IconID.Value == "" then
@@ -9145,6 +9145,15 @@ run("CustomIcon", function()
     IconID = CustomIcon.CreateTextBox({
         Name = "IconID",
         TempText = "Type here the iconID",
-        Function = function() end
+        Function = function()
+			if string.find(IconID.Value, "rbxassetid://") then
+				setIconID(iconId)
+			elseif IconID.Value == "" then
+				setIconID(defaultID)
+				--warningNotification("PlayerListIcon", "Please specify valid ID! Example: rbxassetid://18518244636", 5)
+			else
+				setIconID("rbxassetid://"..IconID.Value)
+			end
+		end
     })
 end)

@@ -7094,6 +7094,7 @@ run(function()
 	local function AutoConsumeFunc()
 		if entityLibrary.isAlive then
 			local speedpotion = getItem("speed_potion")
+            local treasure_chest = getItem("treasure_chest")
 			if lplr.Character:GetAttribute("Health") <= (lplr.Character:GetAttribute("MaxHealth") - (100 - AutoConsumeHealth.Value)) then
 				autobankapple = true
 				local item = getItem("apple")
@@ -7127,6 +7128,13 @@ run(function()
 					})
 				end
 			end
+            if treasure_chest then
+				local secret = pcall(function() workspace:FindFirstChild("PirateTreasure"):GetAttribute("Secret") end)
+				if secret then
+                	local args = {[1] = {["secret"] = secret}}
+                	game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("OpenTreasureChest"):InvokeServer(unpack(args))
+				end
+            end
 		end
 	end
 
@@ -7138,6 +7146,23 @@ run(function()
 				table.insert(AutoConsume.Connections, vapeEvents.AttributeChanged.Event:Connect(function(changed)
 					if changed:find("Shield") or changed:find("Health") or changed:find("speed") then
 						AutoConsumeFunc()
+					end
+				end))
+				table.insert(AutoConsume.Connections, workspace.ChildAdded:Connect(function(child)
+					if child.Name == "PirateTreasure" then
+						local args = {[1] = {["secret"] = child:GetAttribute("Secret")}}
+						game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("OpenTreasureChest"):InvokeServer(unpack(args))
+					end
+				end))
+				table.insert(AutoConsume.Connections, game:GetService("ReplicatedStorage"):WaitForChild("Inventories"):WaitForChild(lplr.Name).ChildAdded:Connect(function(child)
+					if child.Name == "treasure_chest" then
+						local args = {
+							[1] = {
+								["item"] = game:GetService("ReplicatedStorage"):WaitForChild("Inventories"):WaitForChild(lplr.Name):WaitForChild("treasure_chest")
+							}
+						}
+						game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("ConsumeItem"):InvokeServer(unpack(args))
+						
 					end
 				end))
 				AutoConsumeFunc()
@@ -7158,7 +7183,6 @@ run(function()
 		Default = true
 	})
 end)
-
 run(function()
 	local AutoHotbarList = {Hotbars = {}, CurrentlySelected = 1}
 	local AutoHotbarMode = {Value = "Toggle"}

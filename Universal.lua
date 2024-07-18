@@ -9107,3 +9107,44 @@ task.spawn(function()
 		end
 	end
 end)
+
+run("CustomIcon", function() 
+    local function setIconID(iconId)
+        local lplr = game:GetService("Players").LocalPlayer
+        local playerlist = game:GetService("CoreGui"):FindFirstChild("PlayerList")
+        if playerlist then
+            pcall(function()
+                local playerlistplayers = playerlist.PlayerListMaster.OffsetFrame.PlayerScrollList.SizeOffsetFrame.ScrollingFrameContainer.ScrollingFrameClippingFrame.ScollingFrame.OffsetUndoFrame
+                local targetedplr = playerlistplayers:FindFirstChild("p_" .. lplr.UserId)
+                if targetedplr then
+                    targetedplr.ChildrenFrame.NameFrame.BGFrame.OverlayFrame.PlayerIcon.Image = iconId
+                    warningNotification("PlayerListIcon", "Succesfully set the icon!", 3)
+                end
+            end)
+        end
+    end
+    local CustomIcon = {}
+    local IconID = {Value = ""}
+    local defaultID = "rbxassetid://18518244636"
+    CustomIcon = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+        Name = 'PlayerListIcon',
+        Function = function(calling)
+            if calling then 
+                CustomIcon["ToggleButton"](false) 
+                if string.find(IconID.Value, "rbxassetid://") then
+                    setIconID(iconId)
+				elseif IconID.Value == "" then
+                    setIconID(defaultID)
+                    --warningNotification("PlayerListIcon", "Please specify valid ID! Example: rbxassetid://18518244636", 5)
+                else
+					setIconID("rbxassetid://"..IconID.Value)
+				end
+            end
+        end
+    }) 
+    IconID = CustomIcon.CreateTextBox({
+        Name = "IconID",
+        TempText = "Type here the iconID",
+        Function = function() end
+    })
+end)

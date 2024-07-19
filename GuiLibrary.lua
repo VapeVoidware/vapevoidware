@@ -7382,5 +7382,61 @@ if shared.VapeExecuted then
 		end
 	end)
 
+	function GuiLibrary.RemoveWindow(windowName)
+		local maingui = GuiLibrary.MainGui
+		local windows = maingui:WaitForChild("ScaledGui"):WaitForChild("ClickGui")
+		local buttons = windows:WaitForChild("MainWindow"):WaitForChild("Children")
+	
+		for i,v in pairs(windows:GetChildren()) do
+			if string.find(windows:GetChildren()[i].Name, windowName) and windows:GetChildren()[i].ClassName == "TextButton" then
+				windows:GetChildren()[i]:Destroy()
+				break
+			end
+		end
+	
+		for i,v in pairs(buttons:GetChildren()) do
+			if string.find(buttons:GetChildren()[i].Name, windowName) and buttons:GetChildren()[i].ClassName == "TextButton" then
+				buttons:GetChildren()[i]:Destroy()
+				break
+			end
+		end
+	end
+
+	function GuiLibrary.RemoveDivider(dividerName)
+		local maingui = GuiLibrary.MainGui
+		local windows = maingui:WaitForChild("ScaledGui"):WaitForChild("ClickGui")
+		local buttons = windows:WaitForChild("MainWindow"):WaitForChild("Children")
+
+		local dividers = {}
+		for i,v in pairs(buttons:GetChildren()) do
+			if buttons:GetChildren()[i].ClassName == "TextLabel" and buttons:GetChildren()[i].Name == "TextLabel" then
+				table.insert(dividers, buttons:GetChildren()[i])
+			end
+		end
+
+		for i,v in pairs(dividers) do
+			if dividers[i].Text == "    "..dividerName then
+				dividers[i]:Destroy()
+			end
+		end
+	end
+
+	function GuiLibrary.RemoveAllDividers()
+		local maingui = GuiLibrary.MainGui
+		local windows = maingui:WaitForChild("ScaledGui"):WaitForChild("ClickGui")
+		local buttons = windows:WaitForChild("MainWindow"):WaitForChild("Children")
+
+		local dividers = {}
+		for i,v in pairs(buttons:GetChildren()) do
+			if buttons:GetChildren()[i].ClassName == "TextLabel" and buttons:GetChildren()[i].Name == "TextLabel" then
+				table.insert(dividers, buttons:GetChildren()[i])
+			end
+		end
+
+		for i,v in pairs(dividers) do
+			dividers[i]:Destroy()
+		end
+	end
+
 	return GuiLibrary
 end

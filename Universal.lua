@@ -8948,7 +8948,7 @@ run("CustomChatTag", function() local CustomChatTag = {}
 	local oldchanneltabs = {}
 	local whitelist = shared.vapewhitelist
 
-	CustomChatTag = GuiLibrary.ObjectsThatCanBeSaved.VoidwareDevWindow.Api.CreateOptionsButton({
+	CustomChatTag = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
 		Name = 'ChatTag',
 		Function = function(calling)
 			if calling then 

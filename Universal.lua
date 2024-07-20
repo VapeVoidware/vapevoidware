@@ -1069,9 +1069,9 @@ table.insert(vapeConnections, {Disconnect = function() hookfunction(func, oldcha
 		reveal = function(args)
 			task.delay(0.1, function()
 				if textChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-                    textChatService.ChatInputBarConfiguration.TargetTextChannel:SendAsync('I am using the inhaler client')
+                    textChatService.ChatInputBarConfiguration.TargetTextChannel:SendAsync('I am using the inhaler client or voidware :)')
                 else
-                    replicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer('I am using the inhaler client', 'All')
+                    replicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer('I am using the inhaler client or voidware :)', 'All')
                 end
 			end)
 		end,

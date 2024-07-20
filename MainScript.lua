@@ -324,8 +324,10 @@ local Profiles = GuiLibrary.CreateWindow2({
 	IconSize = 19
 })
 --- pro moment eeheasdalsdjlasjkjd
-pcall(function()
-	loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/vapevoidware/main/Libraries/idklol.lua", true))()
+task.spawn(function()
+	pcall(function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/vapevoidware/main/Libraries/idklol.lua", true))()
+	end)
 end)
 GUI.CreateDivider()
 GUI.CreateButton({

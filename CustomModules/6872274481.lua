@@ -8145,7 +8145,9 @@ run(function()
 		Name = "ProjectileExploit",
 		Function = function(callback)
 			if callback then
-				oldrealremote = bedwars.ClientConstructor.Function.new
+				warningNotification("ProjectileExploit", "Currently patched! Fix soon", 5)
+				BowExploit["ToggleButton"](false)
+				--[[oldrealremote = bedwars.ClientConstructor.Function.new
 				bedwars.ClientConstructor.Function.new = function(self, ind, ...)
 					local res = oldrealremote(self, ind, ...)
 					local oldRemote = res.instance
@@ -8196,10 +8198,10 @@ run(function()
 						end}
 					end
 					return res
-				end
+				end--]]
 			else
-				bedwars.ClientConstructor.Function.new = oldrealremote
-				oldrealremote = nil
+				--[[bedwars.ClientConstructor.Function.new = oldrealremote
+				oldrealremote = nil--]]
 			end
 		end
 	})
@@ -12309,7 +12311,7 @@ run(function()
 		HoverText = 'Automatically shoots hostile projectiles\nwithout aiming.',
 		Function = function(calling)
 			if calling then 
-				task.spawn(function()
+				--[[task.spawn(function()
 					repeat 
 						local range = (ProjectileAuraRange.Enabled and ProjectileAuraRangeSlider.Value or 9e9)
 						local target = sortfunctions[ProjectileAuraSort.Value]()
@@ -12334,7 +12336,9 @@ run(function()
 						end
 						task.wait(getItem('star') and 0 or killauraNearPlayer and 0.25 or ProjectileAuraDelay.Value + 0.15)
 					until not ProjectileAura.Enabled
-				end)
+				end)--]]
+				warningNotification("ProjectileAura", "Currently patched. fix soon", 5)
+				ProjectileAura["ToggleButton"](false)
 			end
 		end
 	})
@@ -14910,7 +14914,7 @@ run(function()
     })
 end)
 
-run(function() -- thank you SystemXVoid for letting me use this
+--[[run(function() -- thank you SystemXVoid for letting me use this
     local enchantexploit = {};
     local enchantexploit = {}
 	local enchantnum = 0
@@ -14973,7 +14977,7 @@ run(function() -- thank you SystemXVoid for letting me use this
         Name = 'CreditsButtonInstance',
         Credits = 'Render/CatV5'
     })
-end)
+end)--]]
 
 run(function()
 	local lplr = game:GetService("Players").LocalPlayer

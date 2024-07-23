@@ -8350,7 +8350,7 @@ run("CloudMods", function() local CloudMods = {}
 		pcall(function()
 			cloud.Color = Color3.fromHSV(CloudColor.Hue, CloudColor.Sat, CloudColor.Value)
 			cloud.Material = (CloudNeon.Enabled and Enum.Material.Neon or Enum.Material.SmoothPlastic) end)
-end
+	end
 	CloudMods = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
 		Name = 'CloudMods',
 		HoverText = 'Recolorizes the clouds to your liking.',
@@ -8434,7 +8434,8 @@ run("chatDisable", function() local chatDisable = {Enabled = false}
 	Credits = chatDisable.CreateCredits({
         Name = 'CreditsButtonInstance',
         Credits = 'Render'
-    }) end)
+    }) 
+end)
 
 run("BubbleMods", function() local BubbleMods = {}
 	local BubbleModsColorToggle = {}
@@ -8456,7 +8457,7 @@ run("BubbleMods", function() local BubbleMods = {}
 			if BubbleModsColorToggle.Enabled then 
 				bubble.BackgroundColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value)
 				pcall(function() bubble.Parent.Caret.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) end)
-pcall(function() bubble.Parent.Carat.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) end)
+				pcall(function() bubble.Parent.Carat.ImageColor3 = Color3.fromHSV(BubbleModsColor.Hue, BubbleModsColor.Sat, BubbleModsColor.Value) end)
 			end
 			if BubbleModsTextColorToggle.Enabled then 
 				pcall(function() bubble.Text.TextColor3 = Color3.fromHSV(BubbleModsTextColor.Hue, BubbleModsTextColor.Sat, BubbleModsTextColor.Value) end)
@@ -8575,8 +8576,8 @@ run("CharacterOutline", function() local CharacterOutline = {}
 						table.insert(CharacterOutline.Connections, lplr.Character.DescendantAdded:Connect(function(instance)
 							if instance:IsA('Highlight') then 
 								instance.Adornee = nil
-							end end)
-)
+							end 
+						end))
 						table.insert(CharacterOutline.Connections, runService.Heartbeat:Connect(function()
 							outline.Adornee = (CharacterOutline.Enabled and lplr.Character or outline.Adornee)
 						end))
@@ -9007,8 +9008,9 @@ run("CustomChatTag", function() local CustomChatTag = {}
 										return tab
 									end
 								end
-							end end)
-if err then 
+							end 
+						end)
+						if err then 
 							warningNotification("ChatTag", "Error making tag! Error: "..tostring(err))
 							warn("[ChatTag_ErrorReport] Error making tag! Error: "..tostring(err))
 							CustomChatTag["ToggleButton"](false) 

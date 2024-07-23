@@ -12960,7 +12960,6 @@ run(function()
     local btext = function(text: string): string
         return text .. ' '
     end
-
     local antiDeath = {}
     local antiDeathConfig = {
         Mode = {},

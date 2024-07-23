@@ -4830,8 +4830,8 @@ run("Search", function() local Search = {Enabled = false}
 						highlight.FillColor = Color3.fromHSV(SearchColor.Hue, SearchColor.Sat, SearchColor.Value)
 						highlight.Adornee = v
 						highlight.Parent = SearchFolder
-					end end)
-)
+					end 
+				end))
 				table.insert(Search.Connections, workspace.DescendantRemoving:Connect(function(v)
 					if v:IsA("BasePart") or v:IsA("Model") then
 						local boxhandle = searchFindBoxHandle(v)
@@ -7340,12 +7340,11 @@ run("LightingTheme", function() local LightingTheme = {Enabled = false}
                 task.spawn(function()
                     themesky = Instance.new("Sky")
                     local success, err = pcall(function() applyTheme(themetable[LightingThemeType.Value]) end)
-if not success then
+					if not success then
                         warningNotification(false, "LightingTheme", "Failed to load the " .. LightingThemeType.Value .. " theme. | " .. err, 5)
                     else
                         themesky.Parent = lightingService
-                    end
-
+					end
                     table.insert(LightingTheme.Connections, lightingService.ChildAdded:Connect(function(v)
                         if v:IsA("Sky") and v ~= themesky then
                             v.Parent = nil
@@ -7475,7 +7474,7 @@ run("Shader", function() local Shader = {Enabled = false}
 					ShaderBlur = Instance.new("BlurEffect")
 					ShaderBlur.Parent = lightingService
 					ShaderBlur.Size = 4 end)
-pcall(function()
+					pcall(function()
 						ShaderTint = Instance.new("ColorCorrectionEffect")
 						ShaderTint.Parent = lightingService
 						ShaderTint.Saturation = -0.2
@@ -8264,9 +8263,6 @@ run("GameWeather", function() local GameWeather = {Enabled = false}
 		Function = function(callback) 
 			if callback then
 				task.spawn(function()
-					if RenderPerformance then 
-						return 
-					end
 					local snowpart = Instance.new("Part")
 					snowpart.Size = Vector3.new(240,0.5,240)
 					snowpart.Name = "SnowParticle"
@@ -8308,7 +8304,7 @@ run("GameWeather", function() local GameWeather = {Enabled = false}
 							snowpart.Position = lplr.Character.HumanoidRootPart.Position + vec3(0,SnowflakesHigh.Value,0)
 						end
 					until not vapeInjected end)
-else
+			else
 				for _, v in next, workspace:GetChildren() do
 					if v.Name == "SnowParticle" then
 						v:Remove()

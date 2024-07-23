@@ -3945,7 +3945,7 @@ if shared.VapeExecuted then
 			children2.Size = UDim2.new(1, 0, 0, 0)
 			children2.BorderSizePixel = 0
 			children2.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-		--	children2.LayoutOrder = amount
+			--	children2.LayoutOrder = amount
 			children2.Visible = false
 			children2.Name = argstablemain["Name"].."Children"
 			children2.Parent = children
@@ -6086,6 +6086,27 @@ if shared.VapeExecuted then
 
 			return buttonapi
 		end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
 
 		return windowapi
 	end

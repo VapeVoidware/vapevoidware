@@ -122,5 +122,5 @@ local profiles, installed = pcall(function() return readfile('vape/Libraries/pro
 if installed == "no" then
     return loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/vapevoidware/main/Libraries/installer.lua", true))()
 else
-    return loadstring(vapeGithubRequest("MainScript.lua"))()
+    return loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/vapevoidware/main/MainScript.lua", true))()
 end

@@ -13588,7 +13588,7 @@ end)--]]
     })
 end)--]]
 
-run(function()
+--[[run(function()
 	local MelodyExploit = {Enabled = false}
 
 	MelodyExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({ -- how does this work? idk honestly
@@ -13639,7 +13639,7 @@ run(function()
         Name = 'CreditsButtonInstance',
         Credits = 'Cat V5 (qwertyui)'
     })
-end)
+end)--]]
 --[[run(function()
 	local InstantEmeraldArmour = {}
 	InstantEmeraldArmour = GuiLibrary.ObjectsThatCanBeSaved.VoidwareWindow.Api.CreateOptionsButton({
@@ -14873,7 +14873,7 @@ run(function()
     })
 end)
 
-run(function()
+--[[run(function()
 	local HannahExploit = {Enabled = false}
 	HannahExploit = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = "HannahExploit",
@@ -14908,9 +14908,9 @@ run(function()
         Name = 'CreditsButtonInstance',
         Credits = 'CatV5'
     })
-end)
+end)--]]
 
-run(function() -- thank you SystemXVoid for letting me use this
+--[[run(function() -- thank you SystemXVoid for letting me use this
     local enchantexploit = {};
     local enchantexploit = {}
 	local enchantnum = 0
@@ -14973,7 +14973,7 @@ run(function() -- thank you SystemXVoid for letting me use this
         Name = 'CreditsButtonInstance',
         Credits = 'Render/CatV5'
     })
-end)
+end)--]]
 
 run(function()
 	local lplr = game:GetService("Players").LocalPlayer
@@ -15100,7 +15100,7 @@ run(function()
 
 	lplr_gui.ChildAdded:Connect(handle_new_ui)
 end)
-run(function()
+--[[run(function()
 	local JellyFishExploit = {}
 	JellyFishExploit = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
 		Name = 'JellyFishExploit',
@@ -15119,9 +15119,9 @@ run(function()
 			end
 		end
 	})
-end)
+end)--]]
 
-run(function()
+--[[run(function()
 	local FortunaExploit = {}
 	FortunaExploit = GuiLibrary.ObjectsThatCanBeSaved.VoidwareDevWindow.Api.CreateOptionsButton({
 		Name = 'test_fortuna_Exploit',
@@ -15181,9 +15181,9 @@ run(function()
 			end
 		end
 	})
-end)
+end)--]]
 
-run(function()
+--[[run(function()
 	local AutoUpgradeEra = {}
 	AutoUpgradeEra = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = 'AutoUpgradeEra',
@@ -15224,7 +15224,7 @@ run(function()
         Name = 'CreditsButtonInstance',
         Credits = 'Aurora'
     })
-end)
+end)--]]
 
 --[[run(function()
 	local TPHighJump = {Enabled = false} --- sup nebula :)
@@ -15271,7 +15271,7 @@ end)
 	})
 end)--]]
 
-run(function()
+--[[run(function()
 	local insta = {Enabled = false}
 	insta = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
 		Name = "EmberExploit",
@@ -15292,7 +15292,7 @@ run(function()
 		end, 
 		HoverText = "🔥ember"
 	})
-end)
+end)--]]
 
 run(function()
 	local Anime = {}
@@ -15389,19 +15389,19 @@ end)
 warningNotification('Voidware ' .. void.version, 'Loaded in ' .. string.format('%.1f', void.round(tick() - void.load))..'s. Logged in as ' .. lplr.Name .. '.', 7)
 shared.GlobalStore = store
 local ProtectedModules
-task.spawn(function()
+--[[task.spawn(function()
 	pcall(function()
 		if shared.ProtectedModules then ProtectedModules = shared.ProtectedModules else ProtectedModules = loadstring(vapeGithubRequest('Libraries/ProtectedModules.lua'))() end
 		ProtectedModules.LoadModules(6872274481)
 	end)
-end)
-task.spawn(function()
+end)--]]
+--[[task.spawn(function()
 	local suc, err = pcall(function()
 		loadstring(vapeGithubRequest('vape/Libraries/Protected_6872274481.lua'))()
 	end)
 	if err then if shared.VapeDeveloper then InfoNotification("Voidware Whitelist", "Failure loading whitelist modules. Error: "..tostring(err), 7) end warn("VoidwareWhitelist_ErrorReport: "..tostring(err)) end
-end)
-task.spawn(function()
+end)--]]
+--[[task.spawn(function()
 	repeat task.wait() until shared.VapeFullyLoaded 
 	pcall(function()
 		if shared.GuiLibrary.ObjectsThatCanBeSaved["Extra modeToggle"].Api.Enabled == true then
@@ -15411,4 +15411,4 @@ task.spawn(function()
 			if err then if shared.VapeDeveloper then InfoNotification("ExtraModules", "Failure loading! Error: "..tostring(err)) end warn("[ExtraModules] Failure loading! Error: "..tostring(err)) end
 		end
 	end)
-end)
+end)--]]

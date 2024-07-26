@@ -9682,7 +9682,6 @@ task.spawn(function()
     task.wait()
   until not vapeInjected
 end)
-
 local vapeAssert = function(argument, title, text, duration, hault, moduledisable, module) 
 	if not argument then
     local suc, res = pcall(function()
@@ -9693,7 +9692,6 @@ local vapeAssert = function(argument, title, text, duration, hault, moduledisabl
     end)
     if hault then while true do task.wait() end end
 end
-
 end
 local function GetMagnitudeOf2Objects(part, part2, bypass)
 	local magnitude, partcount = 0, 0

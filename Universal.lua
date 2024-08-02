@@ -7431,8 +7431,8 @@ run("VapePrivateDetector", function() local VapePrivateDetector = {Enabled = fal
 							repeat newserver = findnewserver() until newserver 
 							game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, newserver, lplr)
 						end
-						end 
-					end))
+						end end)
+)
 				end)
 			end
 		end

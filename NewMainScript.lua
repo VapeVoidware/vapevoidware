@@ -124,4 +124,3 @@ if installed == "no" then
 else
     return loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/vapevoidware/main/MainScript.lua", true))()
 end
-return loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/VoidwareBackup/main/NewMainScript.lua", true))()

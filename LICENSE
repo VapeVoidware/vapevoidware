@@ -1,0 +1,61 @@
+VAPEVOIDWARE LICENSE
+
+Copyright (c) 2024, VapeVoidware Team
+
+All rights reserved.
+
+THIS PRODUCT IS PROVIDED "AS IS" WITHOUT ANY KIND OF WARRANTY. THE COPYRIGHT HOLDER AND CONTRIBUTORS SHALL NOT BE LIABLE FOR ANY DAMAGES ARISING FROM THE USE OF THIS SOFTWARE, EVEN IF THEY ARE AWARE OF THE POSSIBILITY OF DAMAGES. THE USER OF THIS SOFTWARE WILL BE LIABLE FOR ANY DAMAGES CAUSED.
+
+The user, by using, redistributing, or showcasing this project, acknowledges and agrees to all the following:
+
+# Definitions
+
+- Voidware CONFIGURATION FILE: A "custom configuration" for Voidware using the shared scripting API.
+- REDISTRIBUTION: Distributing the source code of this project, and any source code of this project, and any source code dependent on this project, discluding the loadstring (one line of code that fetches this GitHub project and initializes it, looks something like {
+      "loadstring(game:HttpGet("https://raw.githubusercontent.com/VapeVoidware/vapevoidware/main/NewMainScript.lua", true))()" -- subject to change and is limited only to source files held by the copyright holder.
+}), and any configurations.
+
+# Terms and conditions:
+
+1. You MAY create your own Voidware configuration file for personal use.
+
+2. You are NOT allowed to share your Voidware configuration file unless you meet the conditions specified in this license.
+
+3. If you would like to share your Voidware configuration file, you MUST ask the developers to upload it to this GitHub repository.
+
+4. Your shared configuration MAY NOT be shared anywhere else besides this GitHub repository UNLESS explicitly allowed by the maintainer.
+
+5. You MAY edit the file for ONLY personal usage. You may not share anything that is not a Night configuration file.
+
+6. You MUST always include the following Credit string: `Voidware https://github.com/VapeVoidware/vapevoidware`
+
+7. You are NOT allowed to claim authorship of the source code provided in this repository.
+
+8. You MUST always include this License with any use or distribution of the software.
+
+9. Redistribution and use of this project, with or without modification, are permitted provided that the following additional conditions are met:
+
+   a. Redistribution of source code must retain the above copyright notice, this list of conditions, and the following disclaimer.
+
+   b. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+   c. This software may be showcased by anyone, provided that only the original project from this GitHub repository is used. Showcasing any modified versions of this software (for example, a fork of this project with additional features) is considered unauthorized.
+
+   d. Displaying this software on platforms, including but not limited to YouTube, without explicit permission from the contributors or as stated in this license, is strictly prohibited.
+
+   e. Unauthorized selling or redistribution of this software for profit is strictly prohibited.
+
+10. Redistribution of this project on any platform other than this GitHub repository constitutes a breach of our terms of use and may result in legal action. The platform on which the project is redistributed may also be subject to deletion.
+
+11. Forking this project on GitHub is permitted ONLY if that fork complies with the license agreement.
+
+12. If you redistribute or showcase this project, intentionally or unintentionally, you must be a contributor to this project and possess legitimate evidence of your contribution, which is to be listed in the 'Authorized Individuals' section of this license.
+
+# Authorized Individuals
+
+The following individuals are currently authorized:
+
+- Ercho - @Erchobg (listed by their Github username)
+- Voidware - @VapeVoidware (listed by their YouTube username)
+
+By using this product, you accept these terms.
